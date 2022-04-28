@@ -31,7 +31,7 @@ const Login: React.FC = ({}) => {
   return (
     <div className="w-screen h-screen bg-gray-200 flex items-center justify-center">
       <div className="mx-auto rounded max-w-lg p-4 shadow bg-white">
-        <h1 className="text-center font-bold text-lg  text-indigo-600 ">
+        <h1 className="text-center font-bold text-lg  text-orange-600 ">
           Login
         </h1>
         <form onSubmit={submit}>
@@ -39,7 +39,7 @@ const Login: React.FC = ({}) => {
             <label className="text-gray-600 text-sm">Username</label>
 
             <input
-              className="block bg-gray-100 rounded-md p-1 ring-1 ring-indigo-400"
+              className="block bg-gray-100 rounded-md p-1 ring-1 ring-orange-400"
               name="username"
               type="text"
               value={username}
@@ -50,7 +50,7 @@ const Login: React.FC = ({}) => {
             <label className="text-gray-600 text-sm">password</label>
 
             <input
-              className="block bg-gray-100 rounded-md p-1 ring-1 ring-indigo-400"
+              className="block bg-gray-100 rounded-md p-1 ring-1 ring-orange-400"
               name="username"
               type="password"
               value={password}
@@ -62,7 +62,7 @@ const Login: React.FC = ({}) => {
             type="submit"
             disabled={loading}
             className={`mx-auto block p-2 w-full mt-4 text-white ${
-              success ? "bg-green-500" : error ? "bg-red-500" : "bg-indigo-500"
+              success ? "bg-green-500" : error ? "bg-red-500" : "bg-orange-500"
             } rounded-sm`}
           >
             {!loading && <span>Login</span>}

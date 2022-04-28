@@ -21,7 +21,7 @@ export const AppContext = createContext<IAppProvider>({} as any);
 
 async function checkToken(token: string) {
   // todo return false immeditatly when the token is empty
-  return false;
+  return true;
 }
 
 const AppProvider: React.FC<Props> = ({ children }) => {
