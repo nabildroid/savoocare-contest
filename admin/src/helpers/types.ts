@@ -1,5 +1,4 @@
 export type Seller = {
-  id: string;
   name: string;
   products: number;
   selled: number;
