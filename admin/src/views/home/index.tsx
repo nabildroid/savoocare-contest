@@ -1,23 +1,38 @@
-import { Fragment } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon, UserIcon } from "@heroicons/react/outline";
 import { SearchIcon } from "@heroicons/react/solid";
 import Logo from "../../assets/logo.png";
 import SelectBox from "../components/selectBox";
+import { AppContext } from "../../context";
+import Sellers from "./sellers";
+import Info from "./info";
+import Serials from "./serials";
+import Settings from "./settings";
 
-
-const navigation = [
-  { name: "Home", href: "#", current: true },
-  { name: "Serial Codes", href: "#", current: false },
-  { name: "Settings", href: "#", current: false },
-];
 const userNavigation = [{ name: "Sign out", href: "#" }];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+enum Page {
+  info = "Home",
+  codes = "Serial Codes",
+  settings = "Settings",
+}
+
 export default function Home() {
+  const { selectedContest, isNew } = useContext(AppContext);
+
+  const [subPage, setSubPage] = useState<Page>(Page.info);
+
+  useEffect(() => {
+    if (isNew) {
+      setSubPage(Page.settings);
+    }
+  }, [isNew]);
+
   return (
     <>
       <div className="min-h-full">
@@ -27,17 +42,21 @@ export default function Home() {
               <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
                 <div className="relative py-5 flex items-center justify-center lg:justify-between">
                   {/* Logo */}
-                  <div className="absolute left-0 flex-shrink-0 lg:static">
+                  <div className="absolute left-0 lg:flex-shrink-0 lg:static">
                     <a href="#">
                       <span className="sr-only">Savoo care admin</span>
-                      <img className="h-8 w-auto" src={Logo} alt="Savoo care admin" />
+                      <img
+                        className="w-12 lg:h-8 lg:w-auto "
+                        src={Logo}
+                        alt="Savoo care admin"
+                      />
                     </a>
                   </div>
 
                   {/* Right section on desktop */}
                   <div className="hidden lg:ml-4 lg:flex lg:items-center lg:pr-0.5">
                     <div className="w-52">
-                      <SelectBox add={() => {}} />
+                      <SelectBox />
                     </div>
 
                     {/* Profile dropdown */}
@@ -78,7 +97,7 @@ export default function Home() {
                   {/* Search */}
                   <div className="flex-1 min-w-0 px-12 lg:hidden">
                     <div className="max-w-xs w-full mx-auto">
-                      <SelectBox add={() => {}} />
+                      <SelectBox />
                     </div>
                   </div>
 
@@ -102,18 +121,20 @@ export default function Home() {
                   <div className="grid grid-cols-3 gap-8 items-center">
                     <div className="col-span-2">
                       <nav className="flex space-x-4">
-                        {navigation.map((item) => (
-                          <a
-                            key={item.name}
-                            href={item.href}
+                        {Object.values(Page).map((item) => (
+                          <button
+                            onClick={() => setSubPage(item)}
+                            key={item}
                             className={classNames(
-                              item.current ? "text-white" : "text-orange-100",
+                              item == subPage
+                                ? "text-white"
+                                : "text-orange-200",
                               "text-sm font-medium rounded-md bg-white bg-opacity-0 px-3 py-2 hover:bg-opacity-10"
                             )}
-                            aria-current={item.current ? "page" : undefined}
+                            aria-current={item == subPage ? "page" : undefined}
                           >
-                            {item.name}
-                          </a>
+                            {item}
+                          </button>
                         ))}
                       </nav>
                     </div>
@@ -132,7 +153,7 @@ export default function Home() {
                           <input
                             id="mobile-search"
                             className="block w-full bg-white bg-opacity-20 py-2 pl-10 pr-3 border border-transparent rounded-md leading-5 text-gray-900 placeholder-white focus:outline-none focus:bg-opacity-100 focus:border-transparent focus:placeholder-gray-500 focus:ring-0 sm:text-sm"
-                            placeholder="Search"
+                            placeholder="Search by name , 'empty'"
                             type="search"
                             name="search"
                           />
@@ -188,18 +209,20 @@ export default function Home() {
                             </div>
                           </div>
                           <div className="mt-3 px-2 space-y-1">
-                            {navigation.map((item) => (
-                              <a
-                                key={item.name}
-                                href={item.href}
+                            {Object.values(Page).map((item) => (
+                              <button
+                                onClick={() => setSubPage(item)}
+                                key={item}
                                 className={classNames(
                                   "block rounded-md px-3 py-2 text-base text-gray-900 font-medium hover:bg-gray-100 hover:text-gray-800",
-                                  item.current ? "text-orange-800" : ""
+                                  item == subPage ? "text-orange-800" : ""
                                 )}
-                                aria-current={item.current ? "page" : undefined}
+                                aria-current={
+                                  item == subPage ? "page" : undefined
+                                }
                               >
-                                {item.name}
-                              </a>
+                                {item}
+                              </button>
                             ))}
                           </div>
                         </div>
@@ -243,10 +266,14 @@ export default function Home() {
               <div className="grid grid-cols-1 gap-4 lg:col-span-2">
                 <section aria-labelledby="section-1-title">
                   <h2 className="sr-only" id="section-1-title">
-                    Section title
+                    {selectedContest?.title} {subPage}
                   </h2>
                   <div className="rounded-lg bg-white overflow-hidden shadow">
-                    <div className="p-6">hello world</div>
+                    <div className="p-2 lg:p-6">
+                      {subPage == Page.info && <Info />}
+                      {subPage == Page.codes && <Serials />}
+                      {subPage == Page.settings && <Settings />}
+                    </div>
                   </div>
                 </section>
               </div>
@@ -255,10 +282,12 @@ export default function Home() {
               <div className="grid grid-cols-1 gap-4">
                 <section aria-labelledby="section-2-title">
                   <h2 className="sr-only" id="section-2-title">
-                    Section title
+                    Sellers
                   </h2>
                   <div className="rounded-lg bg-white overflow-hidden shadow">
-                    <div className="p-6">{/* Your content */}</div>
+                    <div className="p-6">
+                      <Sellers />
+                    </div>
                   </div>
                 </section>
               </div>

@@ -1,108 +1,98 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon, PlusIcon } from "@heroicons/react/solid";
-
-const people = [
-  { id: 1, name: "Wade Cooper" },
-  { id: 2, name: "Arlene Mccoy" },
-  { id: 3, name: "Devon Webb" },
-  { id: 4, name: "Tom Cook" },
-  { id: 5, name: "Tanya Fox" },
-  { id: 6, name: "Hellen Schmidt" },
-  { id: 7, name: "Caroline Schultz" },
-  { id: 8, name: "Mason Heaney" },
-  { id: 9, name: "Claudie Smitham" },
-  { id: 10, name: "Emil Schaefer" },
-];
+import { AppContext } from "../../context";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-type Props = {
-  add(): void;
-};
-
-const SelectBox: React.FC<Props> = ({ add }) => {
-  const [selected, setSelected] = useState(people[3]);
+const SelectBox: React.FC = ({}) => {
+  const { contests, selectContest, toggleNew, selectedContest } =
+    useContext(AppContext);
 
   const onClick = () => {
-    setSelected({ ...selected });
+    toggleNew();
   };
   return (
-    <Listbox value={selected} onChange={setSelected}>
-      {({ open }) => (
-        <div className="mt-1 relative">
-          <Listbox.Button className="relative w-full  border-2 border-white/50 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-orange-200 focus:border-orange-200 sm:text-sm">
-            <span className="block truncate text-orange-100 font-semibold">
-              {selected.name}
-            </span>
-            <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-              <SelectorIcon
-                className="h-5 w-5 text-white/80"
-                aria-hidden="true"
-              />
-            </span>
-          </Listbox.Button>
-
-          <Transition
-            show={open}
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-              <button
-                onClick={onClick}
-                className="text-center py-2 text-xs font-semibold space-x-2 hover:bg-orange-300  flex text-orange-900 justify-center items-center bg-orange-100 w-full "
+    <div className="flex   items-center space-x-2">
+      <button
+        onClick={onClick}
+        className="text-white hover:bg-orange-500 rounded-full p-1"
+      >
+        <PlusIcon className="w-6 h-6" />
+      </button>
+      <Listbox value={selectedContest ?? {}} onChange={selectContest}>
+        {({ open }) => (
+          <div className="mt-1 relative">
+            <Listbox.Button className="relative w-full  border-2 border-white/50 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-orange-200 focus:border-orange-200 sm:text-sm">
+              <span
+                className={classNames(
+                  "block truncate text-orange-100 font-semibold",
+                  !selectedContest ? "opacity-0" : ""
+                )}
               >
-                <PlusIcon aria-hidden="true" className="w-4 h-4 opacity-75" />
-                <span>add Context</span>
-              </button>
+                {selectedContest?.title ?? "default context"}
+              </span>
+              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <SelectorIcon
+                  className="h-5 w-5 text-white/80"
+                  aria-hidden="true"
+                />
+              </span>
+            </Listbox.Button>
 
-              {people.map((person) => (
-                <Listbox.Option
-                  key={person.id}
-                  className={({ active }) =>
-                    classNames(
-                      active ? "text-white bg-orange-600" : "text-gray-900",
-                      "cursor-default select-none relative py-2 pl-8 pr-4"
-                    )
-                  }
-                  value={person}
-                >
-                  {({ selected, active }) => (
-                    <>
-                      <span
-                        className={classNames(
-                          selected ? "font-semibold" : "font-normal",
-                          "block truncate"
-                        )}
-                      >
-                        {person.name}
-                      </span>
-
-                      {selected ? (
+            <Transition
+              show={open}
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                {contests.map((item) => (
+                  <Listbox.Option
+                    key={item.id}
+                    className={({ active }) =>
+                      classNames(
+                        active ? "text-white bg-orange-600" : "text-gray-900",
+                        "cursor-default select-none relative py-2 pl-8 pr-4"
+                      )
+                    }
+                    value={item}
+                  >
+                    {({ selected, active }) => (
+                      <>
                         <span
                           className={classNames(
-                            active ? "text-white" : "text-orange-600",
-                            "absolute inset-y-0 left-0 flex items-center pl-1.5"
+                            selected ? "font-semibold" : "font-normal",
+                            "block truncate"
                           )}
                         >
-                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          {item.title}
                         </span>
-                      ) : null}
-                    </>
-                  )}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Transition>
-        </div>
-      )}
-    </Listbox>
+
+                        {selected ? (
+                          <span
+                            className={classNames(
+                              active ? "text-white" : "text-orange-600",
+                              "absolute inset-y-0 left-0 flex items-center pl-1.5"
+                            )}
+                          >
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
+          </div>
+        )}
+      </Listbox>
+    </div>
   );
 };
 
