@@ -1,7 +1,7 @@
 import { Router } from "express";
-import knex from "../../knex";
-import db from "../../knex";
-import { Code, Contest, Seller } from "../../models";
+import knex from "../knex";
+import db from "../knex";
+import { Code, Contest, Seller } from "../models";
 
 const multer = require("multer");
 const upload = multer({ dest: "/tmp" });
@@ -119,6 +119,46 @@ api.post("contest", upload.single("csv"), async (req, res) => {
   });
 
   res.send("ok");
+});
+
+// export type Contest = {
+//   id: string;
+//   title: string;
+//   titleAr: string;
+//   start: Date;
+//   end: Date;
+//   prizes: { name: string; image: string }[];
+//   selled: number;
+//   sellers: number;
+//   total: number;
+// };
+// select count() as total,count(DISTINCT(codes.seller)) as sellers, sum(codes.selled = 1) as selled, contests.id from contests JOIN codes on codes.contest = contests.id GROUP BY(contests.id);
+
+api.get("/contest", async (_, res) => {
+  let ref = db<Contest>("contests");
+  ref = ref.groupBy("contests.id");
+
+  ref = ref.join("codes", "codes.contest", "contests.id");
+
+  const contests = await ref
+    .count({ total: "codes.subscription" })
+    .count({ sellers: knex.raw("DISTINCT(codes.seller)") })
+    .sum({ selled: knex.raw("codes.selled = 1") })
+    .select(
+      "contests.id",
+      "contests.end",
+      "contests.start",
+      "contests.title",
+      "contests.title_ar"
+    );
+
+  return res.json(
+    contests.map((e) => ({
+      ...e,
+      start: new Date(e.start),
+      end: new Date(e.end),
+    }))
+  );
 });
 
 api.patch("contest/:id", async (req, res) => {
