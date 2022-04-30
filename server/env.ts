@@ -1,7 +1,7 @@
 import { cleanEnv, num, str, bool } from "envalid";
 
 const env = cleanEnv(process.env, {
-  PORT: num({ default: 3000 }),
+  PORT: num({ default: 3002 }),
   SITE_NAME: str({ default: "Savoo - contest" }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 3306 }),
