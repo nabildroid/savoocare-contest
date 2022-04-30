@@ -14,10 +14,15 @@ interface IAppProvider {
   selectedContest?: Contest;
   selectContest(contest: Contest): void;
 
+  sellerPage: number;
+  setSellerPage: (n: number) => void;
   sellers: Seller[];
   selectedSeller?: Seller;
   selectSeller(seller?: Seller): void;
 
+  codePage: number;
+  setCodePage: (n: number) => void;
+  assign(serial: string): void;
   codes: Code[];
 
   isNew: boolean;
@@ -34,9 +39,11 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   const [contests, setContests] = useState<Contest[]>([]);
   const [selectedContest, setContest] = useState<Contest>();
 
+  const [sellerPage, setSellerPage] = useState(0);
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [selectedSeller, setSeller] = useState<Seller>();
 
+  const [codePage, setCodePage] = useState(0);
   const [codes, setCodes] = useState<Code[]>([]);
 
   const [isNew, setIsNew] = useState<boolean>(false);
@@ -52,9 +59,11 @@ const AppProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     Server.getContests().then(setContests);
-    Server.getSellers(0, {}).then(setSellers);
-    Server.getCodes(0, {}).then(setCodes);
   }, []);
+
+  useEffect(() => {
+    Server.getSellers(sellerPage, {}).then(setSellers);
+  }, [sellerPage]);
 
   useEffect(() => {
     if (!selectedContest && contests.length) {
@@ -67,17 +76,40 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   }, [contests]);
 
   useEffect(() => {
+    if (selectedContest && contests.every((s) => s.id != selectedContest?.id)) {
+      setContests((c) => [selectedContest, ...c]);
+    }
+
     setSeller(undefined);
   }, [selectedContest]);
+
+  useEffect(() => {
+    if (selectedContest) {
+      Server.getCodes(selectedContest.id, codePage, {}).then(setCodes);
+    }
+  }, [selectedContest, codePage]);
 
   const login = async (name: string, password: string) => {
     setTimeout(() => setAuthorized(true), 2000);
     return true;
   };
 
+  const assign = async (serial: string) => {
+    if (!selectedSeller) return;
+    await Server.assign(serial, selectedSeller.name);
+    setCodes((codes) =>
+      codes.map((c) => {
+        if (c.serial == serial) c.seller = selectedSeller.name;
+        return c;
+      })
+    );
+  };
   const values: IAppProvider = {
+    sellerPage,
+    setSellerPage,
     contests,
     codes,
+    assign,
     authorized,
     sellers,
     login,
@@ -86,6 +118,8 @@ const AppProvider: React.FC<Props> = ({ children }) => {
     selectedContest,
     selectedSeller,
     isNew,
+    codePage,
+    setCodePage,
     toggleNew: () => setIsNew((s) => !s),
   };
 

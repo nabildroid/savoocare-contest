@@ -3,12 +3,12 @@ import { Entity } from "./helpers/utils";
 
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:3000/admin";
+axios.defaults.baseURL = "http://localhost:3002/admin";
 
 export async function getContests(): Promise<Contest[]> {
   console.log("fetching the contexts ...");
   const { data } = await axios.get<Contest[]>("contest");
-  
+
   return data.map((d) => ({
     ...d,
     start: new Date(d.start),
@@ -25,33 +25,45 @@ export async function getSellers(
   },
   sorted?: boolean
 ): Promise<Seller[]> {
-  return [
-    {
-      name: "Lakrib Nabil",
-      products: 356,
-      selled: 15,
-    },
-    {
-      name: "Savoo care",
-      products: 3506,
-      selled: 0,
-    },
-    {
-      name: "sellerA",
-      products: 356,
-      selled: 256,
-    },
-  ];
+  const { data } = await axios.get(
+    `/sellers/${page}?name=${query.name ?? ""}&serial=${
+      query.serial ?? ""
+    }&type=${query.type ?? "unassigned"}`
+  );
+
+  return data as Seller[];
 }
 
 export async function updateContest(
   id: string,
   contest: Entity<Contest>
+): Promise<void> {
+  await axios.patch("/contest/" + id, {
+    ...contest,
+  });
+}
+
+export async function createContest(
+  contest: Entity<Contest>,
+  files: FileList
 ): Promise<Contest> {
-  return null!;
+  const formData = new FormData();
+
+  formData.append("csv", files[0]);
+  formData.append("title", contest.title);
+  formData.append("titleAr", contest.titleAr);
+  formData.append("start", contest.start.getTime().toString());
+  formData.append("end", contest.end.getTime().toString());
+
+  const { data } = await axios.post("/contest", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return data as Contest;
 }
 
 export async function getCodes(
+  contest: string,
   page: number,
   query: {
     sellers?: string[];
@@ -60,33 +72,18 @@ export async function getCodes(
   },
   sorted?: boolean
 ): Promise<Code[]> {
-  return [
-    {
-      serial: "dsd87s7d8sd8",
-      selled: false,
-    },
-    {
-      serial: "dsd87s7d8sd8",
-      selled: true,
-    },
-    {
-      serial: "dsd87s7d8sd8",
-      selled: false,
-      seller: "lakrib nabil",
-    },
-    {
-      serial: "dsd87s7d8sd8",
-      selled: false,
-    },
-    {
-      serial: "dsd87s7d8sd8",
-      selled: false,
-    },
-  ];
+  const { data } = await axios.get(
+    `/codes/${contest}/${page}?serial=${query.serial ?? ""}&type=${
+      query.type ?? "unassigned"
+    }`
+  );
+
+  return data as Code[];
 }
 
-export async function assign(contest: string, seller: string): Promise<Code> {
-  return null!;
+export async function assign(serial: string, seller: string): Promise<Boolean> {
+  const { data } = await axios.post(`/sellers/assign/${seller}/${serial}`);
+  return data == "ok";
 }
 
 export async function deleteCode(serial: string): Promise<void> {}

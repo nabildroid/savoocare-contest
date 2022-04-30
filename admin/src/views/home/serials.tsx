@@ -4,7 +4,8 @@ import Pagination from "../components/pagination";
 import Table from "../components/table";
 
 export default function Serials() {
-  const { selectedSeller, selectSeller } = useContext(AppContext);
+  const { selectedSeller, selectSeller, codePage, setCodePage } =
+    useContext(AppContext);
   return (
     <div>
       <div className="flex items-center">
@@ -19,7 +20,10 @@ export default function Serials() {
       </div>
       <Table />
       <div className="mt-6">
-        <Pagination />
+        <Pagination
+          next={() => setCodePage(codePage + 1)}
+          prev={() => setCodePage(codePage - 1)}
+        />
       </div>
     </div>
   );

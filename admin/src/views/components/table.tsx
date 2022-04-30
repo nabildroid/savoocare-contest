@@ -1,19 +1,3 @@
-/*
-  This example requires Tailwind CSS v3.0+ 
-  
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 import { useContext, useLayoutEffect, useRef, useState } from "react";
 import { AppContext } from "../../context";
 import { Code } from "../../helpers/types";
@@ -23,7 +7,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function Table() {
-  const { selectedSeller, codes } = useContext(AppContext);
+  const { selectedSeller, codes, assign } = useContext(AppContext);
 
   const checkbox = useRef<HTMLInputElement>(null!);
   const [checked, setChecked] = useState(false);
@@ -161,6 +145,8 @@ export default function Table() {
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-800">
                         <button
+                          disabled={!selectedSeller}
+                          onClick={() => assign(person.serial)}
                           className={classNames(
                             "border-b",
                             person.seller

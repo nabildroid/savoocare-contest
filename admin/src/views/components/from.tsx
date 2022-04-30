@@ -1,9 +1,18 @@
 import { DatabaseIcon } from "@heroicons/react/outline";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import * as Server from "../../server";
 import { AppContext } from "../../context";
+import { useForm } from "react-hook-form";
+
+function formatDate(d: Date) {
+  return `${d.getFullYear()}-${d.getDay().toString().padStart(2, "0")}-${d
+    .getDate()
+    .toString()
+    .padStart(2, "0")}`;
+}
 
 export default function Form() {
-  const { isNew, selectedContest } = useContext(AppContext);
+  const { isNew, selectedContest, selectContest } = useContext(AppContext);
 
   const [title, setTitle] = useState("");
   const [titleAr, setTitleAr] = useState("");
@@ -29,8 +38,40 @@ export default function Form() {
     }
   }, [selectedContest]);
 
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (isNew) {
+      if (!file) return;
+
+      const contest = await Server.createContest(
+        {
+          end: endDate,
+          start: startDate,
+          title,
+          titleAr,
+          selled: 0,
+          sellers: 0,
+          total: 0,
+          prizes: [],
+        },
+        file!
+      );
+
+      selectContest(contest);
+    } else {
+      await Server.updateContest(selectedContest!.id, {
+        ...selectedContest!,
+        end: endDate,
+        start: startDate,
+        title,
+        titleAr,
+      });
+    }
+  }
+
   return (
-    <form action="#" method="POST">
+    <form onSubmit={onSubmit} method="POST">
       <div className=" sm:rounded-md sm:overflow-hidden">
         <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
           <div className="grid grid-cols-3 gap-6">
@@ -74,7 +115,7 @@ export default function Form() {
               </label>
               <div className="mt-1 flex rounded-md shadow-sm">
                 <input
-                  value={startDate?.toDateString()}
+                  value={formatDate(startDate!)}
                   onChange={(e) => setStartDate(new Date(e.target.value))}
                   type="date"
                   name="start-day"
@@ -94,7 +135,7 @@ export default function Form() {
               </label>
               <div className="mt-1 flex rounded-md shadow-sm">
                 <input
-                  value={endDate?.toDateString()}
+                  value={formatDate(endDate!)}
                   onChange={(e) => setEndDate(new Date(e.target.value))}
                   type="date"
                   name="end-day"
@@ -117,8 +158,11 @@ export default function Form() {
                     htmlFor="file-upload"
                     className="relative cursor-pointer bg-white rounded-md font-medium text-orange-600 hover:text-orange-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-orange-500"
                   >
-                    <span>Upload a file</span>
+                    <span className={!isNew ? "text-gray-600" : ""}>
+                      Upload a file
+                    </span>
                     <input
+                      disabled={!isNew}
                       onChange={(e) => setFile(e.target.files!)}
                       id="file-upload"
                       name="file-upload"
@@ -133,7 +177,10 @@ export default function Form() {
             </div>
           </div>
         </div>
-        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+        <div className="px-4 py-3 space-x-2 bg-gray-50 text-right sm:px-6">
+          <button className="inline-flex justify-center py-2 px-4  border-transparent shadow-sm text-sm font-medium rounded-md border border-red-500 text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+            delete
+          </button>
           <button
             type="submit"
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"

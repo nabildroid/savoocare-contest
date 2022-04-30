@@ -3,13 +3,15 @@ import { AppContext } from "../../context";
 import Pagination from "../components/pagination";
 
 export default function Sellers() {
-  const { sellers, selectSeller } = useContext(AppContext);
+  const { sellers, selectSeller, sellerPage, setSellerPage } =
+    useContext(AppContext);
+
   return (
     <div>
       <div className="flow-root mt-6">
         <ul role="list" className="-my-5 divide-y divide-gray-200">
           {sellers.map((person) => (
-            <li key={person.id} className="py-2">
+            <li key={person.name} className="py-2">
               <div className="flex items-center space-x-4">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
@@ -40,7 +42,10 @@ export default function Sellers() {
         </ul>
       </div>
       <div className="mt-6">
-        <Pagination />
+        <Pagination
+          next={() => setSellerPage(sellerPage + 1)}
+          prev={() => setSellerPage(sellerPage - 1)}
+        />
       </div>
     </div>
   );
