@@ -6,7 +6,7 @@ function classNames(...classes: string[]) {
 
 async function checkCode(code: string) {
   try {
-    const response = await fetch("http://localhost:3002/api/check/" + code);
+    const response = await fetch("./check/" + code);
     return (await response.text()) == "valide";
   } catch (e) {
     // todo add logging system!

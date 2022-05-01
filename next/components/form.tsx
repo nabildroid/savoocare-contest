@@ -18,7 +18,7 @@ type Application = {
 
 async function apply(application: Application, code: string) {
   try {
-    const response = await fetch("http://localhost:3002/api/check/" + code, {
+    const response = await fetch("./check/" + code, {
       method: "POST",
       body: JSON.stringify(application),
       headers:{

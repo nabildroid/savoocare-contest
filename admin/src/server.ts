@@ -4,7 +4,7 @@ import { Entity } from "./helpers/utils";
 import Axios from "axios";
 
 const axios = Axios.create({
-  baseURL: "http://192.168.43.198:3002/admin",
+  baseURL: "./admin/api",
 });
 
 export async function getContests(): Promise<Contest[]> {

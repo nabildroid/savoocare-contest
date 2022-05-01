@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./main.ts"
+    "dev": "nodemon ./main.ts",
+    "pm2": "NODE_ENV=production pm2 start build/main.js --watch -i max",
+    "build": "rimraf build && tsc -p tsconfig.json"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,8 @@
     "node-ts": "^5.1.2",
     "nodemon": "^2.0.15",
     "passport": "^0.5.2",
+    "pm2": "^5.2.0",
+    "rimraf": "^3.0.2",
     "ts-node": "^10.7.0"
   },
   "devDependencies": {
