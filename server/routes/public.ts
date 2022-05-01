@@ -4,7 +4,14 @@ import { Application, Code } from "../models";
 
 const api = Router();
 
+const isSubscriptionCode = (x: string) =>
+  (x.match(/\d{3}(\d|[A-F]){5}/) ?? [])[0] == x;
+
 async function validateCode(code: string) {
+  if (code.length != 8 || !isSubscriptionCode(code)) {
+    return false;
+  }
+
   const query = await db<Code>("codes")
     .where("subscription", "=", code)
     .where("selled", "=", 0)
@@ -17,6 +24,7 @@ async function validateCode(code: string) {
 api.get("/check/:subscription", async (req, res) => {
   //BUG you have also to check the contest id
   const { subscription } = req.params;
+
   const isValide = await validateCode(subscription);
 
   res.send(isValide ? "valide" : "error");
@@ -27,21 +35,23 @@ api.post("/check/:subscription", async (req, res) => {
   const { name, age } = req.body;
   const isValide = await validateCode(subscription);
   if (isValide) {
-    await db<Application>("applications").insert({
-      age,
-      name,
-      subscription,
-    });
+    try {
+      await db<Application>("applications").insert({
+        age,
+        name,
+        subscription,
+      });
 
-    await db<Code>("codes")
-      .update("selled", "1")
-      .where("subscription", "=", subscription);
+      await db<Code>("codes")
+        .update("selled", "1")
+        .where("subscription", "=", subscription);
 
-    res.send("done");
+      res.send("done");
+    } catch (e) {}
   } else {
     // todo log this mullision activity!
-    res.status(501).send("error");
   }
+  return res.status(422).send("error");
 });
 
 export default api;

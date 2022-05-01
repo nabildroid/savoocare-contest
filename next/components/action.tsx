@@ -13,6 +13,9 @@ async function checkCode(code: string) {
   }
 }
 
+const isSubscriptionCode = (x: string) =>
+  (x.match(/\d{3}(\d|[A-F]){5}/) ?? [])[0] == x;
+
 type Props = {
   setValideCode: (str: string) => void;
 };
@@ -25,7 +28,7 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (true || code.length > 8) {
+    if (isSubscriptionCode(code)) {
       // todo force code length
       setLoading(true);
       const codeIsValide = await checkCode(code);
@@ -39,12 +42,14 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
         setIsValide(false);
       }
 
-      setTimeout(() => {
-        setIsError(false);
-      }, 3000);
-
       setLoading(false);
+    } else {
+      setIsError(true);
     }
+
+    setTimeout(() => {
+      setIsError(false);
+    }, 3000);
   }
   return (
     <form
