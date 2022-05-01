@@ -15,6 +15,7 @@ async function validateCode(code: string) {
   return query.length && !!query[0].exists;
 }
 api.get("/check/:subscription", async (req, res) => {
+  //BUG you have also to check the contest id
   const { subscription } = req.params;
   const isValide = await validateCode(subscription);
 

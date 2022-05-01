@@ -9,7 +9,8 @@ const env = cleanEnv(process.env, {
   DB_USER: str({ default: "admin" }),
   DB_PASSWORD: str({ default: "admin" }),
   USER_LIMIT_PER_DAY: num({ default: 50 }),
-  JWT_SECRET: str({ default: "ilk" }),
+  JWT_SECRET: str({ default: "ilk2" }),
+  APPLICATIONS_FILE_PREFIX: str({ default: "savoo" }),
 });
 
 export default env;

@@ -12,7 +12,8 @@ function formatDate(d: Date) {
 }
 
 export default function Form() {
-  const { isNew, selectedContest, selectContest } = useContext(AppContext);
+  const { isNew, selectedContest, selectContest, deleteContest } =
+    useContext(AppContext);
 
   const [title, setTitle] = useState("");
   const [titleAr, setTitleAr] = useState("");
@@ -178,7 +179,10 @@ export default function Form() {
           </div>
         </div>
         <div className="px-4 py-3 space-x-2 bg-gray-50 text-right sm:px-6">
-          <button className="inline-flex justify-center py-2 px-4  border-transparent shadow-sm text-sm font-medium rounded-md border border-red-500 text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+          <button
+            onClick={deleteContest}
+            className=" inline-flex hidden justify-center py-2 px-4  border-transparent shadow-sm text-sm font-medium rounded-md border border-red-500 text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+          >
             delete
           </button>
           <button

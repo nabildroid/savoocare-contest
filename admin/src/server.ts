@@ -1,9 +1,11 @@
 import { Code, Contest, Seller } from "./helpers/types";
 import { Entity } from "./helpers/utils";
 
-import axios from "axios";
+import Axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:3002/admin";
+const axios = Axios.create({
+  baseURL: "http://192.168.43.198:3002/admin",
+});
 
 export async function getContests(): Promise<Contest[]> {
   console.log("fetching the contexts ...");
@@ -32,6 +34,14 @@ export async function getSellers(
   );
 
   return data as Seller[];
+}
+
+export async function createSeller(name: string) {
+  const { data } = await axios.post("/seller", {
+    name,
+  });
+
+  return data as Seller;
 }
 
 export async function updateContest(
@@ -86,7 +96,16 @@ export async function assign(serial: string, seller: string): Promise<Boolean> {
   return data == "ok";
 }
 
-export async function deleteCode(serial: string): Promise<void> {}
+export async function deleteCode(serial: string): Promise<void> {
+  const { data } = await axios.delete("/code/" + serial);
+}
+
+export async function download(id: string) {
+  const { data } = await axios.get(`/contest/${id}/applications`);
+  return data as string;
+}
+
+export async function deleteContest(id: string): Promise<void> {}
 
 export async function login(name: string, password: string) {
   try {
@@ -116,10 +135,10 @@ export function subscribeToAuth(fct: (isValide: boolean) => any) {
   axios.interceptors.response.use(
     (e) => e,
     (e) => {
-      if (e.response.status === 401) {
-        console.log("error###########");
-        fct(false);
-      }
+      console.log("error###########");
+      localStorage.removeItem("token");
+      fct(false);
+      return Promise.reject(e);
     }
   );
 }

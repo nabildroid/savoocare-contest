@@ -13,13 +13,16 @@ interface IAppProvider {
   contests: Contest[];
   selectedContest?: Contest;
   selectContest(contest: Contest): void;
+  deleteContest(): void;
 
   sellerPage: number;
   setSellerPage: (n: number) => void;
   sellers: Seller[];
   selectedSeller?: Seller;
   selectSeller(seller?: Seller): void;
+  addSeller(name: string): Promise<boolean>;
 
+  deleteCode(serial: string): void;
   codePage: number;
   setCodePage: (n: number) => void;
   assign(serial: string): void;
@@ -28,6 +31,7 @@ interface IAppProvider {
   isNew: boolean;
   toggleNew(): void;
 }
+
 export const AppContext = createContext<IAppProvider>({} as any);
 
 const AppProvider: React.FC<Props> = ({ children }) => {
@@ -46,6 +50,10 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   const [authorized, setAuthorized] = useState<boolean>();
 
   useEffect(() => {
+    Server.subscribeToAuth(setAuthorized);
+  }, []);
+
+  useEffect(() => {
     Server.checkToken().then((isValide) => {
       console.log("checking ....");
       setAuthorized(isValide);
@@ -53,19 +61,12 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (authorized) Server.subscribeToAuth(setAuthorized);
+    if (authorized) Server.getContests().then(setContests);
   }, [authorized]);
 
   useEffect(() => {
-    if(authorized)
-    Server.getContests().then(setContests);
-  }, [authorized]);
-
-  useEffect(() => {
-    if(authorized)
-
-    Server.getSellers(sellerPage, {}).then(setSellers);
-  }, [sellerPage,authorized]);
+    if (authorized) Server.getSellers(sellerPage, {}).then(setSellers);
+  }, [sellerPage, authorized]);
 
   useEffect(() => {
     if (!selectedContest && contests.length) {
@@ -86,10 +87,10 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   }, [selectedContest]);
 
   useEffect(() => {
-    if (selectedContest&& authorized) {
+    if (selectedContest && authorized) {
       Server.getCodes(selectedContest.id, codePage, {}).then(setCodes);
     }
-  }, [selectedContest, codePage,authorized]);
+  }, [selectedContest, codePage, authorized]);
 
   const login = async (name: string, password: string) => {
     if (await Server.login(name, password)) {
@@ -108,10 +109,40 @@ const AppProvider: React.FC<Props> = ({ children }) => {
       })
     );
   };
+
+  async function addSeller(name: string) {
+    try {
+      const seller = await Server.createSeller(name);
+      if (!seller?.name) return false;
+      if (seller.name) {
+        setSellers((s) => [seller, ...sellers]);
+        return true;
+      }
+    } catch (e) {}
+
+    return false;
+  }
+
+  async function deleteContest() {
+    if (selectedContest) {
+      await Server.deleteCode(selectedContest?.id);
+      setContests((s) => s.filter((i) => i.id != selectedContest.id));
+      setContest(undefined);
+    }
+  }
+
+  async function deleteCode(serial: string) {
+    await Server.deleteCode(serial);
+    setCodes((c) => c.filter((a) => a.serial != serial));
+  }
+
   const values: IAppProvider = {
+    deleteCode,
+    deleteContest,
     sellerPage,
     setSellerPage,
     contests,
+    addSeller,
     codes,
     assign,
     authorized,

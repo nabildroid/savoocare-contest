@@ -1,13 +1,25 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AppContext } from "../../context";
+import AddSeller from "../components/addSeller";
 import Pagination from "../components/pagination";
 
 export default function Sellers() {
   const { sellers, selectSeller, sellerPage, setSellerPage } =
     useContext(AppContext);
 
+  const [showNewSeller, setShowNewSeller] = useState(false);
+
   return (
     <div>
+      {showNewSeller && <AddSeller hide={() => setShowNewSeller(false)} />}
+
+      <button
+        onClick={() => setShowNewSeller(true)}
+        className="mx-auto test-sm p-1 w-full hover:bg-orange-500 hover:text-white text-orange-800 border border-orange-500 rounded-lg"
+      >
+        add seller
+      </button>
+
       <div className="flow-root mt-6">
         <ul role="list" className="-my-5 divide-y divide-gray-200">
           {sellers.map((person) => (

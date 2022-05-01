@@ -2,8 +2,14 @@ import { Router } from "express";
 import knex from "../knex";
 import db from "../knex";
 import fs from "fs";
-import { Code, Contest, Seller } from "../models";
+import { Application, Code, Contest, Seller } from "../models";
 import { validateToken } from "./auth";
+import env from "../env";
+
+import Crypto from "node:crypto";
+
+import os from "os";
+import Path from "path";
 
 const multer = require("multer");
 const upload = multer({ dest: "/tmp" });
@@ -11,7 +17,7 @@ const upload = multer({ dest: "/tmp" });
 const api = Router();
 
 api.use(async (req, res, next) => {
-  if(req.path.startsWith("/auth")){
+  if (req.path.startsWith("/auth")) {
     return next();
   }
   const authHeader = req.headers["authorization"];
@@ -93,7 +99,7 @@ api.get("/codes/:contest/?:page", async (req, res) => {
   res.json(codes);
 });
 
-api.post("/sellers", async (req, res) => {
+api.post("/seller", async (req, res) => {
   const { name } = req.body;
 
   await db<Seller>("sellers").insert({ name });
@@ -113,6 +119,16 @@ api.post("/sellers/assign/:seller/:serial", async (req, res) => {
 
 api.delete("/code/:serial", async (req, res) => {
   const { serial } = req.params;
+
+  // todo delete first all the subscriptions
+
+  const subscription = (
+    await db<Code>("codes").where("serial", "=", serial).select("subscription")
+  )[0];
+
+  await db<Application>("applications")
+    .del()
+    .where("subscription", "=", subscription.toString());
 
   await db<Code>("codes").del().where("serial", "=", serial);
   res.send("ok");
@@ -235,9 +251,39 @@ api.patch("/contest/:id", async (req, res) => {
 api.delete("/contest/:id", async (req, res) => {
   const { id } = req.params;
 
+  // todo delete all the forigni keys, and the codes
+
   await db<Contest>("contests").del().where("id", "=", id);
 
   res.send("ok");
 });
 
 export default api;
+
+api.get("/contest/:id/applications", async (req, res) => {
+  const { id } = req.params;
+
+  const apps = await db<Code>("codes")
+    .where("contest", "=", id)
+    .where("selled", "=", 1)
+    .join("applications", "codes.subscription", "applications.subscription")
+    .select("applications.id", "applications.name", "applications.age");
+
+  let csv = "id,name,age\n";
+
+  apps.forEach((app) => {
+    csv += app["id"] + ",";
+    csv += app["name"].replace(",", " ") + ",";
+    csv += app["age"] + ",";
+    csv += "\n";
+  });
+
+  const rand = Crypto.randomUUID().slice(0, 30);
+  const name = env.APPLICATIONS_FILE_PREFIX + "-" + rand + ".csv";
+  const path = Path.join(os.tmpdir(), name);
+
+  console.log(apps);
+  fs.writeFileSync(path, csv);
+
+  res.send(name);
+});

@@ -7,7 +7,15 @@ function classNames(...classes: string[]) {
 }
 
 export default function Table() {
-  const { selectedSeller, codes, assign } = useContext(AppContext);
+  const { selectedSeller, codes, deleteCode, assign } = useContext(AppContext);
+
+  function deleteAll() {
+    codes.forEach((c) => deleteCode(c.serial));
+  }
+
+  function assignAll() {
+    codes.forEach((c) => assign(c.serial));
+  }
 
   const checkbox = useRef<HTMLInputElement>(null!);
   const [checked, setChecked] = useState(false);
@@ -39,6 +47,7 @@ export default function Table() {
                   {selectedSeller && (
                     <button
                       type="button"
+                      onClick={assignAll}
                       className="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                     >
                       assign to {selectedSeller.name}
@@ -46,6 +55,7 @@ export default function Table() {
                   )}
                   <button
                     type="button"
+                    onClick={deleteAll}
                     className="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     Delete all
@@ -158,10 +168,15 @@ export default function Table() {
                         </button>
                       </td>
                       <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <a href="#" className="text-red-600 hover:text-red-900">
+                        <button
+                          onClick={() => deleteCode(person.serial)}
+                          className="text-red-600 hover:text-red-900"
+                        >
                           delete
-                          <span className="sr-only">, {person.serial}</span>
-                        </a>
+                          <span className="sr-only">
+                            delete the serial, {person.serial}
+                          </span>
+                        </button>
                       </td>
                     </tr>
                   ))}
