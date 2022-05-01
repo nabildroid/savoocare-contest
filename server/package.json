@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon ./main.ts",
     "pm2": "NODE_ENV=production pm2 start build/main.js --watch -i max",
-    "build": "rimraf build && tsc -p tsconfig.json"
+    "build": "rimraf build && tsc -p tsconfig.json",
+    "migrate": "knex migrate:latest"
   },
   "keywords": [],
   "author": "",

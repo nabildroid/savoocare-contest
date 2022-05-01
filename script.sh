@@ -12,15 +12,17 @@ cd savoocare-contest
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 
+source ~/.nvm/nvm.sh
+
 nvm install node -y
 
 
 # install nginx
 apt install nginx -y
 
-rm /etc/nginx/sites-enabled -rf
+rm /etc/nginx/sites-enabled/* -rf
 mv /usr/app/savoocare-contest/nginx.conf /etc/nginx/sites-available/default
-ln -s /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 systemctl restart nginx
 
@@ -58,6 +60,9 @@ npm install pm2@latest -g
 
 cd server
 npm i
+npm run build
+npm run migrate
+npm run pm2
 
 cd ../admin 
 npm i
