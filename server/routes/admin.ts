@@ -3,11 +3,33 @@ import knex from "../knex";
 import db from "../knex";
 import fs from "fs";
 import { Code, Contest, Seller } from "../models";
+import { validateToken } from "./auth";
 
 const multer = require("multer");
 const upload = multer({ dest: "/tmp" });
 
 const api = Router();
+
+api.use(async (req, res, next) => {
+  if(req.path.startsWith("/auth")){
+    return next();
+  }
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  try {
+    const user = await validateToken(token);
+    if (user.type == "admin") {
+      return next();
+    } else {
+      throw new Error("Unauthorized");
+    }
+  } catch (e) {
+    return res.sendStatus(403);
+  }
+});
 
 // export type Seller = {
 //     name: string;

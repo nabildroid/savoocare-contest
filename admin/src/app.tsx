@@ -7,13 +7,16 @@ import Login from "./views/login";
 export default function App() {
   const { authorized } = useContext(AppContext);
 
-  if (authorized === undefined) {
-    return <span>Loading ... </span>;
-  }
+  console.log(authorized);
 
   if (authorized === false) {
     return <Login />;
   }
+
+  if (authorized === undefined) {
+    return <span>Loading ... </span>;
+  }
+
 
   return <Home />;
 }

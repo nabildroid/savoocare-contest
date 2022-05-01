@@ -87,3 +87,49 @@ export async function assign(serial: string, seller: string): Promise<Boolean> {
 }
 
 export async function deleteCode(serial: string): Promise<void> {}
+
+export async function login(name: string, password: string) {
+  try {
+    const { data } = await axios.post("/auth/login", { name, password });
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+      return true;
+    }
+  } catch (e) {}
+
+  return false;
+}
+
+export async function checkToken() {
+  const token = localStorage.getItem("token");
+  if (token != null) {
+    setToken(token);
+    return true;
+  }
+  return false;
+}
+
+export function subscribeToAuth(fct: (isValide: boolean) => any) {
+  console.log("subscribing to auth");
+  axios.interceptors.response.use(
+    (e) => e,
+    (e) => {
+      if (e.response.status === 401) {
+        console.log("error###########");
+        fct(false);
+      }
+    }
+  );
+}
+
+function setToken(token: string) {
+  axios.interceptors.request.use((config) => {
+    if (!config.headers) config.headers = {};
+
+    config.headers.authorization = token;
+
+    return config;
+  });
+}

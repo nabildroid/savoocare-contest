@@ -30,11 +30,6 @@ interface IAppProvider {
 }
 export const AppContext = createContext<IAppProvider>({} as any);
 
-async function checkToken(token: string) {
-  // todo return false immeditatly when the token is empty
-  return true;
-}
-
 const AppProvider: React.FC<Props> = ({ children }) => {
   const [contests, setContests] = useState<Contest[]>([]);
   const [selectedContest, setContest] = useState<Contest>();
@@ -51,19 +46,26 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   const [authorized, setAuthorized] = useState<boolean>();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    checkToken(token ?? "").then((isValide) => {
+    Server.checkToken().then((isValide) => {
+      console.log("checking ....");
       setAuthorized(isValide);
     });
   }, []);
 
   useEffect(() => {
-    Server.getContests().then(setContests);
-  }, []);
+    if (authorized) Server.subscribeToAuth(setAuthorized);
+  }, [authorized]);
 
   useEffect(() => {
+    if(authorized)
+    Server.getContests().then(setContests);
+  }, [authorized]);
+
+  useEffect(() => {
+    if(authorized)
+
     Server.getSellers(sellerPage, {}).then(setSellers);
-  }, [sellerPage]);
+  }, [sellerPage,authorized]);
 
   useEffect(() => {
     if (!selectedContest && contests.length) {
@@ -84,13 +86,15 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   }, [selectedContest]);
 
   useEffect(() => {
-    if (selectedContest) {
+    if (selectedContest&& authorized) {
       Server.getCodes(selectedContest.id, codePage, {}).then(setCodes);
     }
-  }, [selectedContest, codePage]);
+  }, [selectedContest, codePage,authorized]);
 
   const login = async (name: string, password: string) => {
-    setTimeout(() => setAuthorized(true), 2000);
+    if (await Server.login(name, password)) {
+      setTimeout(() => setAuthorized(true), 2000);
+    }
     return true;
   };
 
