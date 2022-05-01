@@ -25,11 +25,11 @@ api.get("/sellers/?:page", async (req, res) => {
 
   let ref = db<Seller>("sellers");
   ref = ref.limit(size);
-  ref = ref.offset(page);
+  ref = ref.offset(Math.max(0, size * (page - 1)));
 
-  ref = ref.join("codes", "codes.seller", "sellers.name");
+  ref = ref.leftJoin("codes", "codes.seller", "sellers.name");
   ref = ref.groupBy("sellers.name");
-  ref = ref.orderBy("selled", "desc");
+  ref = ref.orderBy("sellers.name", "desc");
   if (name) {
     ref = ref.whereLike("sellers.name", `%${name}%`);
   }
@@ -61,11 +61,11 @@ api.get("/codes/:contest/?:page", async (req, res) => {
   let ref = db<Code>("codes");
 
   ref = ref.limit(size);
-  ref = ref.offset(page);
+  ref = ref.offset(Math.max(0, size * (page - 1)));
 
   ref = ref.where("contest", "=", contest);
 
-  ref = ref.orderBy("selled", "desc");
+  ref = ref.orderBy("serial", "desc");
 
   const codes = await ref.select("serial", "seller", "selled");
   res.json(codes);
