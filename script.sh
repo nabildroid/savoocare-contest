@@ -30,25 +30,25 @@ systemctl restart nginx
 # install mysql
 
 
-sudo apt install mysql-server -y
-sudo systemctl start mysql.service
+apt install mysql-server -y
+systemctl start mysql.service
 
 
 # Make sure that NOBODY can access the server without a password
-sudo mysql -e "UPDATE mysql.user SET Password = PASSWORD('CHANGEME') WHERE User = 'root'"
+mysql -e "UPDATE mysql.user SET Password = PASSWORD('CHANGEME') WHERE User = 'root'"
 # Kill the anonymous users
-sudo mysql -e "DROP USER ''@'localhost'"
+mysql -e "DROP USER ''@'localhost'"
 # Because our hostname varies we'll use some Bash magic here.
-sudo mysql -e "DROP USER ''@'$(hostname)'"
+mysql -e "DROP USER ''@'$(hostname)'"
 # Kill off the demo database
-sudo mysql -e "DROP DATABASE test"
+mysql -e "DROP DATABASE test"
 # Make our changes take effect
-sudo mysql -e "FLUSH PRIVILEGES"
 
-sudo mysql -e "CREATE USER 'admin' IDENTIFIED BY 'admin';"
+mysql -e "CREATE USER 'admin' IDENTIFIED BY 'admin';"
 
-sudo mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'admin' WITH GRANT OPTION;"
-
+mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'admin' WITH GRANT OPTION;"
+# https://stackoverflow.com/questions/50093144/mysql-8-0-client-does-not-support-authentication-protocol-requested-by-server
+mysql -e "FLUSH PRIVILEGES"
 
  
 

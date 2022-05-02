@@ -6,6 +6,7 @@ import Steps from "../components/steps";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
 import backgroundImage from "../public/background-1.png";
+import axios from "axios";
 
 const Form = dynamic(() => import("../components/form"));
 
@@ -78,10 +79,28 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (props) => {
+  const { data } = await axios.get(
+    "http://127.0.0.1:3002/internal/contest/latest"
+  );
+
+  if (!data.id) {
+    return {
+      redirect: {
+        destination: "https://savoocare.com/",
+      },
+      props: {
+        title: "",
+        titleAr: "",
+        year: 222,
+        description: "",
+      },
+    };
+  }
+
   return {
     props: {
-      title: "Lenses Contest",
-      titleAr: "مسابقة العدسات",
+      title: data.title,
+      titleAr: data.title_ar,
       description:
         "Lenses contest is a contest made by Savoo care company, Lorem      ipsum dolor sit amet consectetur adipisicing elit. Quia earum       nihil veritatis fugiat quod provident, corrupti dolores vero",
       year: new Date().getFullYear(),
