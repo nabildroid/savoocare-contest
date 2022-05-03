@@ -16,14 +16,17 @@ type Application = {
   email: string;
 };
 
+const isDev = process.env.NODE_ENV == "development";
+const api = isDev ? "http://localhost:3002/api/check/" : "./check/";
+
 async function apply(application: Application, code: string) {
   try {
-    const response = await fetch("./check/" + code, {
+    const response = await fetch(api + code, {
       method: "POST",
       body: JSON.stringify(application),
-      headers:{
-          "Content-type":"application/json"
-      }
+      headers: {
+        "Content-type": "application/json",
+      },
     });
     return (await response.text()) == "done";
   } catch (e) {

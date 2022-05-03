@@ -3,9 +3,10 @@ import { Entity } from "./helpers/utils";
 
 import Axios from "axios";
 
-const axios = Axios.create({
-  baseURL: "./admin/api",
-});
+const devServer = "http://localhost:3002";
+const baseURL = import.meta.env.DEV ? devServer + "/admin" : "./api";
+
+const axios = Axios.create({ baseURL });
 
 export async function getContests(): Promise<Contest[]> {
   console.log("fetching the contexts ...");
@@ -109,7 +110,7 @@ export async function deleteContest(id: string): Promise<void> {}
 
 export async function login(name: string, password: string) {
   try {
-    const { data } = await axios.post("/auth/login", { name, password });
+    const { data } = await axios.post("../auth/login", { name, password });
 
     if (data.token) {
       localStorage.setItem("token", data.token);

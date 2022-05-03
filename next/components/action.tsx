@@ -4,9 +4,12 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+const isDev = process.env.NODE_ENV == "development";
+const api = isDev ? "http://localhost:3002/api/check/" : "./check/";
+
 async function checkCode(code: string) {
   try {
-    const response = await fetch("./check/" + code);
+    const response = await fetch(api + code);
     return (await response.text()) == "valide";
   } catch (e) {
     // todo add logging system!

@@ -4,6 +4,9 @@ import App from "./app";
 import AppProvider from "./context";
 import "./helpers/index.css";
 
+
+
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AppProvider>
