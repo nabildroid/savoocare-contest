@@ -38,7 +38,9 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
 
       if (codeIsValide) {
         setIsValide(true);
-        setValideCode(code);
+        setTimeout(() => {
+          setValideCode(code);
+        }, 750);
       } else {
         setCode("");
         setIsError(true);
@@ -53,7 +55,7 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
     setTimeout(() => {
       setIsError(false);
       setIsValide(false);
-    }, 3000);
+    }, 1500);
   }
   return (
     <form
@@ -65,7 +67,10 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
         onChange={(e) => setCode(e.target.value)}
         className={classNames(
           "outline-none py-2 px-3 text-deeppurpel font-bold rounded-lg text-sm shadow-lg shadow-pink-300/20 bg-white placeholder:text-deeppurpel/50 border-2 border-fuchsia-400/50 font-mono",
-          "w-full md:w-64"
+          "w-full md:w-64",
+          "input",
+          isValide ? "input-success" : "",
+          isError ? "input-error border-red-500/75" : ""
         )}
         placeholder="enter the code"
         type="text"

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 
+
 import Action from "../components/action";
 import Steps from "../components/steps";
 import { GetServerSideProps, GetStaticProps } from "next";
@@ -23,10 +24,11 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState<number>(0);
 
-  
 
   return (
     <div className="max-w-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-9 xl:pt-20 lg:pb-16">
+      
+
       {valideCode && (
         <Form code={valideCode} setName={setName} setNumber={setNumber} />
       )}

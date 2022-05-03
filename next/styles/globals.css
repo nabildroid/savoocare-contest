@@ -15,6 +15,18 @@ body {
   );
 }
 
+.input-error {
+  animation-name: bounce;
+}
+
+.input-success {
+  animation-name: scall;
+}
+.input {
+  animation-duration: 1s;
+  animation-delay: 0.25s;
+}
+
 .grandient-text {
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent;
@@ -26,4 +38,60 @@ body {
     hsla(227, 100%, 84%, 1) 0%,
     hsla(317, 29%, 42%, 1) 100%
   );
+}
+
+@keyframes scall {
+  0% {
+    transform: scale(1);
+    timing-function: ease-in;
+  }
+  15% {
+    transform: scale(0.94);
+    timing-function: cubic-bezier(0.4, 0.85, 1, 1);
+  }
+
+  65% {
+    transform: scale(1.1);
+    timing-function: cubic-bezier(0.64, 0.85, 1, 1);
+  }
+  100% {
+    transform: scale(1);
+    timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+
+/* This approximates the ease-in-out-bounce animation from easings.net, which would require a plug-in to use*/
+@keyframes bounce {
+  0% {
+    transform: translateX(0px);
+    timing-function: ease-in;
+  }
+  37% {
+    transform: translateX(8px);
+    timing-function: ease-out;
+  }
+  55% {
+    transform: translateX(-8px);
+    timing-function: ease-in;
+  }
+  73% {
+    transform: translateX(4px);
+    timing-function: ease-out;
+  }
+  82% {
+    transform: translateX(-4px);
+    timing-function: ease-in;
+  }
+  91% {
+    transform: translateX(2px);
+    timing-function: ease-out;
+  }
+  96% {
+    transform: translateX(-2px);
+    timing-function: ease-in;
+  }
+  100% {
+    transform: translateX(0px);
+    timing-function: ease-in;
+  }
 }
