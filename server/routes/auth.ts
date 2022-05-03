@@ -14,9 +14,11 @@ type Token = {
 };
 
 function createToken(name: string, type: Token["type"]) {
-  return jwt.sign({ name, type }, env.JWT_SECRET, {
+  const token = jwt.sign({ name, type }, env.JWT_SECRET, {
     expiresIn: "1800s",
   });
+
+  return token;
 }
 
 export function validateToken(token: string) {
@@ -27,9 +29,6 @@ export function validateToken(token: string) {
     });
   });
 }
-
-
-
 
 api.post("/login", async (req, res) => {
   const { name, password } = req.body;

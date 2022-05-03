@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 
 import Action from "../components/action";
 import Steps from "../components/steps";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
 import Image from "next/image";
 import backgroundImage from "../public/background-1.png";
 import axios from "axios";
@@ -78,7 +78,7 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async (props) => {
+export const getStaticProps: GetStaticProps<Props> = async (props) => {
   const { data } = await axios.get(
     "http://127.0.0.1:3002/internal/contest/latest"
   );

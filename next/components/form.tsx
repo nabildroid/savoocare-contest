@@ -14,6 +14,7 @@ type Application = {
   address: string;
   age: number;
   email: string;
+  married?: boolean;
 };
 
 const isDev = process.env.NODE_ENV == "development";
@@ -35,7 +36,9 @@ async function apply(application: Application, code: string) {
 }
 
 export default function Form({ code }: { code: string }) {
-  let [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
+
+  const [isMarried, setIsMarried] = useState<boolean>();
 
   function closeModal() {
     setIsOpen(false);
@@ -48,8 +51,14 @@ export default function Form({ code }: { code: string }) {
   } = useForm<Application>();
 
   const onSubmit = async (data: any) => {
-    await apply(data, code);
-    closeModal();
+    await apply(
+      {
+        ...data,
+        married: isMarried,
+      },
+      code
+    );
+    // closeModal();
   };
 
   return (
@@ -97,7 +106,10 @@ export default function Form({ code }: { code: string }) {
                         htmlFor="fullname"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Full name *
+                        Full name{" "}
+                        <span className="text-xs font-mono text-red-500  ">
+                          *
+                        </span>
                       </label>
                       <div className="mt-1 flex rounded-md shadow-sm">
                         <input
@@ -117,11 +129,17 @@ export default function Form({ code }: { code: string }) {
                         htmlFor="tel"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Phone Number *
+                        Phone Number{" "}
+                        <span className="text-xs font-mono text-red-500  ">
+                          *
+                        </span>
                       </label>
                       <div className="mt-1 flex rounded-md shadow-sm">
                         <input
-                          {...register("tel", { required: true })}
+                          {...register("tel", {
+                            required: true,
+                            pattern: /0\d{9}/,
+                          })}
                           type="tel"
                           id="tel"
                           autoComplete="tel"
@@ -158,7 +176,10 @@ export default function Form({ code }: { code: string }) {
                         htmlFor="age"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Age
+                        Age{" "}
+                        <span className="text-xs font-mono text-red-500  ">
+                          *
+                        </span>
                       </label>
                       <div className="mt-1 flex rounded-md shadow-sm">
                         <input
@@ -183,7 +204,10 @@ export default function Form({ code }: { code: string }) {
                         htmlFor="address"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Address*
+                        Address
+                        <span className="text-xs font-mono text-red-500  ">
+                          *
+                        </span>
                       </label>
                       <div className="mt-1 flex rounded-md shadow-sm">
                         <input
@@ -205,7 +229,7 @@ export default function Form({ code }: { code: string }) {
                       >
                         Married Status
                       </label>
-                      <Radio />
+                      <Radio select={setIsMarried} />
                     </div>
 
                     <div className="sm:col-span-6 text-center">

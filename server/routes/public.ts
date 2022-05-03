@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { body, validationResult } from "express-validator";
+
 import db from "../knex";
 import { Application, Code } from "../models";
 
@@ -30,28 +32,56 @@ api.get("/check/:subscription", async (req, res) => {
   res.send(isValide ? "valide" : "error");
 });
 
-api.post("/check/:subscription", async (req, res) => {
-  const { subscription } = req.params;
-  const { name, age } = req.body;
-  const isValide = await validateCode(subscription);
-  if (isValide) {
-    try {
-      await db<Application>("applications").insert({
-        age,
-        name,
-        subscription,
-      });
+api.post(
+  "/check/:subscription",
+  body("name").isLength({ min: 8, max: 100 }),
+  body("age").isInt({ min: 16, max: 80 }).toInt(),
+  body("email").optional().isEmail(),
+  body("tel").isMobilePhone("any").toInt(),
+  body("address").isLength({ min: 3, max: 200 }),
+  body("married").optional().isBoolean(),
 
-      await db<Code>("codes")
-        .update("selled", "1")
-        .where("subscription", "=", subscription);
+  async (req, res) => {
+    const { subscription } = req.params as any;
+    const { name, age, tel: phone, email, address, married } = req.body;
+    const errors = validationResult(req);
+    console.log({
+      age,
+      name,
+      email,
+      address,
+      married,
+      phone,
+      subscription,
+    });
 
-      res.send("done");
-    } catch (e) {}
-  } else {
-    // todo log this mullision activity!
+    console.log(errors.array());
+    const isValide = errors.isEmpty() && (await validateCode(subscription));
+    if (isValide ) {
+      try {
+        await db<Application>("applications").insert({
+          age,
+          name,
+          email,
+          address,
+          married,
+          phone,
+          subscription,
+        });
+
+        await db<Code>("codes")
+          .update("selled", "1")
+          .where("subscription", "=", subscription);
+
+        return res.send("done");
+      } catch (e) {
+        console.log(e)
+      }
+    } else {
+      // todo log this mullision activity!
+    }
+    return res.sendStatus(422);
   }
-  return res.sendStatus(422);
-});
+);
 
 export default api;

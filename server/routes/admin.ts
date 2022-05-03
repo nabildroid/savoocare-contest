@@ -1,4 +1,5 @@
 import { Router } from "express";
+import axios from "axios";
 import knex from "../knex";
 import db from "../knex";
 import fs from "fs";
@@ -246,6 +247,8 @@ api.patch("/contest/:id", async (req, res) => {
     .where("id", "=", id);
 
   res.send("ok");
+
+  axios.get("http://localhost:3000/api/revalidate");
 });
 
 api.delete("/contest/:id", async (req, res) => {
