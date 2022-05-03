@@ -103,7 +103,8 @@ export async function deleteCode(serial: string): Promise<void> {
 
 export async function download(id: string) {
   const { data } = await axios.get(`/contest/${id}/applications`);
-  return data as string;
+  const root = import.meta.env.PROD ? "/admin/" : "file:///tmp/";
+  return `${root}${data}` as string;
 }
 
 export async function deleteContest(id: string): Promise<void> {}
