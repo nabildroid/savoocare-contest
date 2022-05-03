@@ -6,8 +6,12 @@ import Admin from "./routes/admin";
 import Public from "./routes/public";
 import Auth from "./routes/auth";
 import Internal from "./routes/internal";
+import SMS from "./services/sms";
 
 const app = Express();
+
+
+export const sms = new SMS("dsd");
 
 app.use(cors());
 

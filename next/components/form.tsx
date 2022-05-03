@@ -35,13 +35,25 @@ async function apply(application: Application, code: string) {
   }
 }
 
-export default function Form({ code }: { code: string }) {
+export default function Form({
+  code,
+  setName,
+  setNumber,
+}: {
+  code: string;
+  setName: (n: string) => void;
+  setNumber: (n: number) => void;
+}) {
   const [isOpen, setIsOpen] = useState(true);
 
   const [isMarried, setIsMarried] = useState<boolean>();
 
-  function closeModal() {
+  function closeModal(name?: string, number?: number) {
     setIsOpen(false);
+    if (name) {
+      setName(name);
+      setNumber(number!);
+    }
   }
 
   const {
@@ -58,13 +70,13 @@ export default function Form({ code }: { code: string }) {
       },
       code
     );
-    // closeModal();
+    closeModal(data.name, data.tel);
   };
 
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={closeModal}>
+        <Dialog as="div" className="relative z-50" onClose={() => closeModal()}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

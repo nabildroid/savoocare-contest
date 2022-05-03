@@ -6,5 +6,24 @@ body {
   @apply font-sans antialiased text-gray-600 !important;
 }
 
-#__next {
+.grandient {
+  background: -webkit-linear-gradient(
+    246deg,
+    hsla(61, 81%, 88%, 1) 0%,
+    hsla(310, 65%, 85%, 1) 50%,
+    hsla(7, 89%, 69%, 1) 100%
+  );
+}
+
+.grandient-text {
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent;
+}
+
+.grandient-button {
+  background: -webkit-linear-gradient(
+    253deg,
+    hsla(227, 100%, 84%, 1) 0%,
+    hsla(317, 29%, 42%, 1) 100%
+  );
 }

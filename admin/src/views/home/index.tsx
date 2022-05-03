@@ -139,7 +139,7 @@ export default function Home() {
                       </nav>
                     </div>
                     <div>
-                      <div className="max-w-md w-full mx-auto">
+                      <div className="max-w-md hidden w-full mx-auto">
                         <label htmlFor="mobile-search" className="sr-only">
                           Search
                         </label>
@@ -151,7 +151,6 @@ export default function Home() {
                             />
                           </div>
                           <input
-                          
                             id="mobile-search"
                             className="block w-full bg-white bg-opacity-20 py-2 pl-10 pr-3 border border-transparent rounded-md leading-5 text-gray-900 placeholder-white focus:outline-none focus:bg-opacity-100 focus:border-transparent focus:placeholder-gray-500 focus:ring-0 sm:text-sm"
                             placeholder="Search by name , 'empty'"

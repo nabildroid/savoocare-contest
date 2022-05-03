@@ -15,7 +15,7 @@ export default function AppBar() {
         <div className="">
           <a
             href="https://savoocare.com"
-            className="group pl-6 border-gray-700 hover:text-teal-400 flex items-center"
+            className="group pl-6 border-gray-700 hover:text-specialorange flex items-center"
           >
             our store
             <svg
@@ -23,7 +23,7 @@ export default function AppBar() {
               width="11"
               height="10"
               fill="none"
-              className="flex-none ml-1.5 text-gray-400 group-hover:text-teal-400"
+              className="flex-none ml-1.5 text-gray-400 group-hover:text-specialorange"
             >
               <path
                 d="M5.593 9.638L10.232 5 5.593.36l-.895.89 3.107 3.103H0v1.292h7.805L4.698 8.754l.895.884z"

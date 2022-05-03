@@ -9,6 +9,7 @@ import backgroundImage from "../public/background-1.png";
 import axios from "axios";
 
 const Form = dynamic(() => import("../components/form"));
+const Thankyou = dynamic(() => import("../components/thankyou"));
 
 type Props = {
   year: number;
@@ -19,16 +20,23 @@ type Props = {
 
 const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
   const [valideCode, setValideCode] = useState("");
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState<number>(0);
+
+  
 
   return (
     <div className="max-w-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-9 xl:pt-20 lg:pb-16">
-      {valideCode && <Form code={valideCode} />}
+      {valideCode && (
+        <Form code={valideCode} setName={setName} setNumber={setNumber} />
+      )}
+      {name && <Thankyou name={name} number={number} />}
 
-      <div className="sm:mb-24 xl:mb-12 lg:flex">
+      <div className="sm:mb-24 xl:mb-12 lg:flex text-gray-300">
         <div className="flex-none relative z-10 flex flex-col items-start lg:pt-10 max-w-screen-sm mx-auto lg:max-w-2xl lg:mx-0 lg:pr-20 mb-12 sm:mb-16 lg:mb-0">
           <h1 className="order-1 text-3xl sm:text-5xl sm:leading-none font-extrabold tracking-tight text-white mb-4">
             Savoo
-            <span className="text-specialorange"> {title} </span>
+            <span className="grandient grandient-text"> {title} </span>
             {year}
           </h1>
           <p className="text-sm font-semibold tracking-wide uppercase mb-4">

@@ -52,6 +52,7 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
 
     setTimeout(() => {
       setIsError(false);
+      setIsValide(false);
     }, 3000);
   }
   return (
@@ -63,9 +64,8 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         className={classNames(
-          "outline-none py-2 px-3 text-deeppurpel font-bold rounded-lg text-sm shadow-lg shadow-specialorange/20 bg-white placeholder:text-deeppurpel/50 border-2 border-specialorange/70 font-mono",
-          isValide ? "border-green-400" : "",
-          isError ? "border-red-400" : ""
+          "outline-none py-2 px-3 text-deeppurpel font-bold rounded-lg text-sm shadow-lg shadow-pink-300/20 bg-white placeholder:text-deeppurpel/50 border-2 border-fuchsia-400/50 font-mono",
+          "w-full md:w-64"
         )}
         placeholder="enter the code"
         type="text"
@@ -73,7 +73,7 @@ const Action: React.FC<Props> = ({ setValideCode }) => {
       <button
         disabled={loading}
         type="submit"
-        className="text-sm bg-orange-400 px-8 font-semibold  text-white py-3  rounded-lg hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-700 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:bg-orange-300"
+        className="text-sm grandient-button px-8 font-semibold  text-white py-3  rounded-lg hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-700 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:bg-orange-300"
       >
         join
       </button>

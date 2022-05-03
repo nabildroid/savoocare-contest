@@ -2,6 +2,7 @@ import { Router } from "express";
 import { body, validationResult } from "express-validator";
 
 import db from "../knex";
+import { sms } from "../main";
 import { Application, Code } from "../models";
 
 const api = Router();
@@ -45,19 +46,10 @@ api.post(
     const { subscription } = req.params as any;
     const { name, age, tel: phone, email, address, married } = req.body;
     const errors = validationResult(req);
-    console.log({
-      age,
-      name,
-      email,
-      address,
-      married,
-      phone,
-      subscription,
-    });
 
     console.log(errors.array());
     const isValide = errors.isEmpty() && (await validateCode(subscription));
-    if (isValide ) {
+    if (isValide) {
       try {
         await db<Application>("applications").insert({
           age,
@@ -73,9 +65,11 @@ api.post(
           .update("selled", "1")
           .where("subscription", "=", subscription);
 
+        sms.send(`thank you ${name} for participating in our contest`);
+
         return res.send("done");
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     } else {
       // todo log this mullision activity!
