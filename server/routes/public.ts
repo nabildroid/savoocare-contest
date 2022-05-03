@@ -51,7 +51,7 @@ api.post("/check/:subscription", async (req, res) => {
   } else {
     // todo log this mullision activity!
   }
-  return res.status(422).send("error");
+  return res.sendStatus(422);
 });
 
 export default api;
