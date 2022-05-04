@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
 
-
 import Action from "../components/action";
 import Steps from "../components/steps";
 import { GetServerSideProps, GetStaticProps } from "next";
@@ -24,11 +23,8 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState<number>(0);
 
-
   return (
     <div className="max-w-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-9 xl:pt-20 lg:pb-16">
-      
-
       {valideCode && (
         <Form code={valideCode} setName={setName} setNumber={setNumber} />
       )}
@@ -89,33 +85,35 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
 };
 
 export const getStaticProps: GetStaticProps<Props> = async (props) => {
-  const { data } = await axios.get(
-    "http://127.0.0.1:3002/internal/contest/latest"
-  );
-
-  if (!data.id) {
-    return {
-      redirect: {
-        destination: "https://savoocare.com/",
-      },
-      props: {
-        title: "",
-        titleAr: "",
-        year: 222,
-        description: "",
-      },
-    };
-  }
-
-  return {
+  const defaultProps = {
+    redirect: {
+      destination: "https://savoocare.com/",
+    },
     props: {
-      title: data.title,
-      titleAr: data.title_ar,
-      description:
-        "Lenses contest is a contest made by Savoo care company, Lorem      ipsum dolor sit amet consectetur adipisicing elit. Quia earum       nihil veritatis fugiat quod provident, corrupti dolores vero",
-      year: new Date().getFullYear(),
+      title: "",
+      titleAr: "",
+      year: 222,
+      description: "",
     },
   };
+  try {
+    const { data } = await axios.get(
+      "http://127.0.0.1:3002/internal/contest/latest"
+    );
+
+    return {
+      props: {
+        title: data.title,
+        titleAr: data.title_ar,
+        description:
+          "Lenses contest is a contest made by Savoo care company, Lorem      ipsum dolor sit amet consectetur adipisicing elit. Quia earum       nihil veritatis fugiat quod provident, corrupti dolores vero",
+        year: new Date().getFullYear(),
+      },
+    };
+  } catch (e) {}
+
+  return defaultProps;
+
 };
 
 export default Home;
