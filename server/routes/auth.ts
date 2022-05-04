@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const api = Router();
 
 async function validateCrediential(name: string, password: string) {
-  return name == "admin" && password == "admin";
+  return name == env.DASHBOARD_USER && password == env.DASHBOARD_PASSWORD;
 }
 
 type Token = {

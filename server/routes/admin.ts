@@ -261,7 +261,6 @@ api.delete("/contest/:id", async (req, res) => {
   res.send("ok");
 });
 
-export default api;
 
 api.get("/contest/:id/applications", async (req, res) => {
   const { id } = req.params;
@@ -302,3 +301,7 @@ api.get("/contest/:id/applications", async (req, res) => {
 
   res.send(name);
 });
+
+
+
+export default api;

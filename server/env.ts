@@ -8,7 +8,8 @@ const env = cleanEnv(process.env, {
   DB_NAME: str({ default: "contest" }),
   DB_USER: str({ default: "admin" }),
   DB_PASSWORD: str({ default: "admin" }),
-  USER_LIMIT_PER_DAY: num({ default: 50 }),
+  DASHBOARD_USER: str({ default: "admin" }),
+  DASHBOARD_PASSWORD: str({ default: "admin" }),
   JWT_SECRET: str({ default: "ilk2" }),
   APPLICATIONS_FILE_PREFIX: str({ default: "savoo" }),
 });
