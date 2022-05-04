@@ -36,7 +36,7 @@ api.post("/login", async (req, res) => {
   if (!isValide) return res.sendStatus(401);
 
   const token = createToken(name, "admin");
-
+  validateToken(token).then(console.log);
   res.json({
     token: `Bearer ${token}`,
   });

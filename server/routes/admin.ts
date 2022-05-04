@@ -22,7 +22,7 @@ api.use(async (req, res, next) => {
     return next();
   }
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = authHeader && authHeader.split(" ")[1].trim();
 
   if (token == null) return res.sendStatus(401);
 
@@ -270,14 +270,26 @@ api.get("/contest/:id/applications", async (req, res) => {
     .where("contest", "=", id)
     .where("selled", "=", 1)
     .join("applications", "codes.subscription", "applications.subscription")
-    .select("applications.id", "applications.name", "applications.age");
+    .select(
+      "applications.id",
+      "applications.name",
+      "applications.age",
+      "applications.phone",
+      "applications.address",
+      "applications.email",
+      "applications.married"
+    );
 
-  let csv = "id,name,age\n";
+  let csv = "id,name,age,phone,address,email,married\n";
 
   apps.forEach((app) => {
     csv += app["id"] + ",";
     csv += app["name"].replace(",", " ") + ",";
     csv += app["age"] + ",";
+    csv += app["phone"] + ",";
+    csv += app["address"].replace(",", " ") + ",";
+    csv += app["email"] + ",";
+    csv += (app["married"] ?? "#") + ",";
     csv += "\n";
   });
 
