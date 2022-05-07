@@ -7,6 +7,7 @@ export async function createContestTable(knex: Knex.Knex) {
       table.increments("id").primary();
       table.string("title").notNullable();
       table.string("title_ar").notNullable();
+      table.string("description").notNullable();
       table.date("start").notNullable();
       table.date("end").notNullable();
     });
@@ -19,4 +20,5 @@ export type Contest = {
   title_ar: string;
   start: Date;
   end: Date;
+  description:string,
 };
