@@ -14,6 +14,7 @@ export type Contest = {
   selled: number;
   sellers: number;
   total: number;
+  description: string;
 };
 
 export type Code = {

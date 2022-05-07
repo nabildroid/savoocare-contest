@@ -136,13 +136,8 @@ api.delete("/code/:serial", async (req, res) => {
 });
 
 api.post("/contest", upload.single("csv"), async (req, res) => {
-  const { title, titleAr, start, end } = req.body;
-  console.log({
-    end: new Date(parseInt(end)),
-    start: new Date(parseInt(end)),
-    title: title,
-    title_ar: titleAr,
-  });
+  const { title, titleAr, start, end, description } = req.body;
+
   const file = (req as any).file;
   console.log(file);
 
@@ -164,6 +159,7 @@ api.post("/contest", upload.single("csv"), async (req, res) => {
           start: new Date(parseInt(end)),
           title: title,
           title_ar: titleAr,
+          description,
         })
         .select("id")
     )[0].toString();
@@ -235,20 +231,29 @@ api.get("/contest", async (_, res) => {
 
 api.patch("/contest/:id", async (req, res) => {
   const { id } = req.params;
-  const { title, titleAr, start, end } = req.body;
+  const { title, titleAr, start, end, description } = req.body;
+  console.log(req.body);
 
-  await db<Contest>("contests")
-    .update({
-      end: new Date(end),
-      start: new Date(start),
-      title: title,
-      title_ar: titleAr,
-    })
-    .where("id", "=", id);
+  try {
+    await db<Contest>("contests")
+      .update({
+        end: new Date(end),
+        start: new Date(start),
+        title: title,
+        title_ar: titleAr,
+        description,
+      })
+      .where("id", "=", id);
 
-  res.send("ok");
+    res.send("ok");
 
-  axios.get("http://localhost:3000/api/revalidate");
+    axios
+      .get("http://localhost:3000/api/revalidate")
+      .catch((e) => console.log("front page is not active"));
+  } catch (e) {
+    res.sendStatus(500);
+    console.log("unable to handle update contest#", id, req.body, e);
+  }
 });
 
 api.delete("/contest/:id", async (req, res) => {
@@ -260,7 +265,6 @@ api.delete("/contest/:id", async (req, res) => {
 
   res.send("ok");
 });
-
 
 api.get("/contest/:id/applications", async (req, res) => {
   const { id } = req.params;
@@ -301,7 +305,5 @@ api.get("/contest/:id/applications", async (req, res) => {
 
   res.send(name);
 });
-
-
 
 export default api;

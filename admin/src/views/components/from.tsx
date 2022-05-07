@@ -17,6 +17,7 @@ export default function Form() {
 
   const [title, setTitle] = useState("");
   const [titleAr, setTitleAr] = useState("");
+  const [desc, setDesc] = useState("");
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(
     new Date(Date.now() + 1000 * 60 * 60 * 24 * 90)
@@ -27,6 +28,7 @@ export default function Form() {
     if (selectedContest && !isNew) {
       setTitle(selectedContest?.title ?? "");
       setTitleAr(selectedContest?.titleAr ?? "");
+      setDesc(selectedContest?.description ?? "");
       setStartDate(selectedContest!.start);
       setEndDate(selectedContest!.end);
     }
@@ -34,6 +36,7 @@ export default function Form() {
     if (selectedContest && isNew) {
       setTitle("");
       setTitleAr("");
+      setDesc("");
       setStartDate(new Date());
       setEndDate(new Date(Date.now() + 1000 * 60 * 60 * 24 * 90));
     }
@@ -55,6 +58,7 @@ export default function Form() {
           sellers: 0,
           total: 0,
           prizes: [],
+          description: desc,
         },
         file!
       );
@@ -67,6 +71,7 @@ export default function Form() {
         start: startDate,
         title,
         titleAr,
+        description: desc,
       });
     }
   }
@@ -143,6 +148,25 @@ export default function Form() {
                   id="end-day"
                   className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 shadow-sm  mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                 />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="col-span-3 sm:col-span-2">
+              <label
+                htmlFor="desc"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Description
+              </label>
+              <div className="mt-1 flex rounded-md shadow-sm">
+                <textarea
+                  id="desc"
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  rows={3}
+                  className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 shadow-sm  mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+                ></textarea>
               </div>
             </div>
           </div>
