@@ -9,7 +9,7 @@ export default function AppBar() {
     >
       <div className="flex items-center justify-between">
         <a href="https://savoocare.com/" className="relative flex-none h-14 aspect-video text-white">
-          <Image src={Logo} layout="responsive" priority className="" />
+          <Image src={Logo} alt="Savoo care" layout="responsive" priority />
         </a>
 
         <div className="">
