@@ -1,22 +1,27 @@
 import React from "react";
 import { useContext } from "react";
-import { AppContext } from "./context";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { AppContext } from "./context/appContext";
+import AuthProvider from "./context/authContest";
+import ContestProvider from "./context/contestContext";
+import SellerProvider from "./context/sellerContest";
 import Home from "./views/home";
 import Login from "./views/login";
 
+
+const queryClient = new QueryClient();
+
+
 export default function App() {
-  const { authorized } = useContext(AppContext);
-
-  console.log(authorized);
-
-  if (authorized === false) {
-    return <Login />;
-  }
-
-  if (authorized === undefined) {
-    return <span>Loading ... </span>;
-  }
-
-
-  return <Home />;
+  return (
+    <AuthProvider login={<Login />}>
+      <QueryClientProvider client={queryClient}>
+        <SellerProvider>
+          <ContestProvider>
+            <Home />
+          </ContestProvider>
+        </SellerProvider>
+      </QueryClientProvider>
+    </AuthProvider>
+  );
 }

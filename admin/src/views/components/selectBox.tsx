@@ -1,20 +1,22 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon, PlusIcon } from "@heroicons/react/solid";
-import { AppContext } from "../../context";
+import { AppContext } from "../../context/appContext";
+import { ContestContext } from "../../context/contestContext";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 const SelectBox: React.FC = ({}) => {
-  const { contests, selectContest, toggleNew, selectedContest } =
-    useContext(AppContext);
+  const { setIsNewContest } = useContext(AppContext);
+  const { select, selected, items } = useContext(ContestContext);
 
   const onClick = () => {
-    toggleNew();
+    console.log("new contest ....");
+    setIsNewContest(true);
   };
+
   return (
     <div className="flex   items-center space-x-2">
       <button
@@ -23,17 +25,17 @@ const SelectBox: React.FC = ({}) => {
       >
         <PlusIcon className="w-6 h-6" />
       </button>
-      <Listbox value={selectedContest ?? {}} onChange={selectContest}>
+      <Listbox value={selected ?? {}} onChange={select}>
         {({ open }) => (
-          <div className="mt-1 relative">
+          <div className="mt-1 w-full relative">
             <Listbox.Button className="relative w-full  border-2 border-white/50 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-orange-200 focus:border-orange-200 sm:text-sm">
               <span
                 className={classNames(
                   "block truncate text-orange-100 font-semibold",
-                  !selectedContest ? "opacity-0" : ""
+                  !selected ? "opacity-0" : ""
                 )}
               >
-                {selectedContest?.title ?? "default context"}
+                {selected?.title ?? "default context"}
               </span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <SelectorIcon
@@ -51,7 +53,7 @@ const SelectBox: React.FC = ({}) => {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                {contests.map((item) => (
+                {items.map((item) => (
                   <Listbox.Option
                     key={item.id}
                     className={({ active }) =>

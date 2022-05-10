@@ -17,6 +17,13 @@ const upload = multer({ dest: "/tmp" });
 
 const api = Router();
 
+const cUploads = upload.fields([
+  { name: "csv", maxCount: 1 },
+  { name: "prize1", maxCount: 1 },
+  { name: "prize2", maxCount: 1 },
+  { name: "prize3", maxCount: 1 },
+]);
+
 api.use(async (req, res, next) => {
   if (req.path.startsWith("/auth")) {
     return next();
@@ -47,14 +54,14 @@ api.use(async (req, res, next) => {
 // SELECT count(codes.seller), sellers.name, sum(codes.selled = 1) from sellers JOIN codes on codes.seller = sellers.name GROUP BY(sellers.name);
 
 api.get("/sellers/?:page", async (req, res) => {
-  const size = parseInt((req.query.size as string) ?? 10);
+  const max = parseInt((req.query.max as string) ?? 10);
   const name = req.query.name as string;
   const type = req.query.type as string;
   const page = parseInt((req.params.page as string) ?? 0);
 
   let ref = db<Seller>("sellers");
-  ref = ref.limit(size);
-  ref = ref.offset(Math.max(0, size * (page - 1)));
+  ref = ref.limit(max);
+  ref = ref.offset(Math.max(0, max * page));
 
   ref = ref.leftJoin("codes", "codes.seller", "sellers.name");
   ref = ref.groupBy("sellers.name");
@@ -72,7 +79,11 @@ api.get("/sellers/?:page", async (req, res) => {
     .sum({ selled: knex.raw("codes.selled = 1") })
     .select("sellers.name");
 
-  res.json(sellers);
+  const count = await db<Seller>("sellers").count({ count: "name" });
+  res.json({
+    data: sellers,
+    count: count[0].count,
+  });
 });
 
 // export type Code = {
@@ -81,23 +92,42 @@ api.get("/sellers/?:page", async (req, res) => {
 //     selled: boolean;
 //   };
 
+// SELECT *,  from codes GROUP BY codes.serial ORDER by target DESC, seller;
+
 api.get("/codes/:contest/?:page", async (req, res) => {
   const contest = req.params.contest as string;
 
-  const size = parseInt((req.query?.size as string) ?? 10);
+  const max = parseInt((req.query.max as string) ?? 10);
+
   const page = parseInt((req.params?.page as string) ?? 0);
+  const seller = req.query.seller;
 
   let ref = db<Code>("codes");
 
-  ref = ref.limit(size);
-  ref = ref.offset(Math.max(0, size * (page - 1)));
+  ref = ref.limit(max);
+  ref = ref.offset(Math.max(0, max * page));
 
   ref = ref.where("contest", "=", contest);
+
+  if (seller) {
+    ref = ref.groupBy("serial");
+    ref = ref.sum({
+      target: knex.raw(
+        `Case When codes.seller = "${seller}" Then 1 Else 0 End`
+      ),
+    });
+    ref = ref.orderBy("target", "desc");
+    ref = ref.orderBy("seller");
+  }
 
   ref = ref.orderBy("serial", "desc");
 
   const codes = await ref.select("serial", "seller", "selled");
-  res.json(codes);
+  const count = await db<Code>("codes").count({ count: "serial" });
+  res.json({
+    data: codes,
+    count: count[0].count,
+  });
 });
 
 api.post("/seller", async (req, res) => {
@@ -127,23 +157,31 @@ api.delete("/code/:serial", async (req, res) => {
     await db<Code>("codes").where("serial", "=", serial).select("subscription")
   )[0];
 
-  await db<Application>("applications")
-    .del()
-    .where("subscription", "=", subscription.toString());
+  if (subscription) {
+    await db<Application>("applications")
+      .del()
+      .where("subscription", "=", subscription.toString());
+  }
 
   await db<Code>("codes").del().where("serial", "=", serial);
   res.send("ok");
 });
 
-api.post("/contest", upload.single("csv"), async (req, res) => {
-  const { title, titleAr, start, end, description } = req.body;
+api.post("/contest", cUploads, async (req, res) => {
+  const { title, titleAr, start, end, description, countries } = req.body;
 
-  const file = (req as any).file;
-  console.log(file);
-
-  const data = fs.readFileSync(file.path, "utf8");
+  const files = (req as any).files;
+  const data = fs.readFileSync(files.csv[0].path, "utf8");
 
   const csv = data.split("\n").map((e) => e.split(","));
+
+  const imgs = [files.prize1[0], files.prize2[0], files.prize3[0]];
+  const imgsNames = imgs.map((e) => e.filename);
+  const imgsPaths = imgs.map((e) => e.path);
+
+  // imgsPaths.forEach((img, i) =>
+  //   fs.copyFileSync(img, "~/Desktop/" + imgsNames[i] + ".png")
+  // );
 
   csv.shift();
   if (!csv[csv.length - 1][0]) {
@@ -160,6 +198,10 @@ api.post("/contest", upload.single("csv"), async (req, res) => {
           title: title,
           title_ar: titleAr,
           description,
+          countries,
+          prize1: imgsNames[0],
+          prize2: imgsNames[1],
+          prize3: imgsNames[2],
         })
         .select("id")
     )[0].toString();
@@ -185,6 +227,7 @@ api.post("/contest", upload.single("csv"), async (req, res) => {
     titleAr,
     sellers: 0,
     total: 0,
+    countries,
   });
 });
 
@@ -216,7 +259,9 @@ api.get("/contest", async (_, res) => {
       "contests.end",
       "contests.start",
       "contests.title",
-      "contests.title_ar"
+      "contests.title_ar",
+      "contests.countries",
+      "contests.description"
     );
 
   return res.json(
@@ -229,26 +274,69 @@ api.get("/contest", async (_, res) => {
   );
 });
 
-api.patch("/contest/:id", async (req, res) => {
+api.patch("/contest/:id", cUploads, async (req, res) => {
   const { id } = req.params;
-  const { title, titleAr, start, end, description } = req.body;
-  console.log(req.body);
+  const { title, titleAr, start, end, description, countries } = req.body;
+  console.log(title, titleAr, start, end, description, countries);
+  const files = (req as any).files;
+
+  let imgsNames: string[] = [];
+  let csv: string[][] = [];
+  if (Object.values(files).length) {
+    if (files.csv) {
+      const data = fs.readFileSync(files.csv[0].path, "utf8");
+
+      csv = data.split("\n").map((e) => e.split(","));
+      csv.shift();
+      if (!csv[csv.length - 1][0]) {
+        csv.pop();
+      }
+    }
+    if (files.prize1) {
+      const imgs = [files.prize1[0], files.prize2[0], files.prize3[0]];
+      imgsNames = imgs.map((e) => e.filename);
+      const imgsPaths = imgs.map((e) => e.path);
+
+      imgsPaths.forEach((img, i) =>
+        fs.copyFileSync(img, "/home/nabil/Desktop/" + imgsNames[i] + ".png")
+      );
+    }
+  }
 
   try {
-    await db<Contest>("contests")
-      .update({
-        end: new Date(end),
-        start: new Date(start),
+    await knex.transaction(async (tdb) => {
+      const updated = {
+        end: new Date(parseInt(end)),
+        start: new Date(parseInt(end)),
         title: title,
         title_ar: titleAr,
         description,
-      })
-      .where("id", "=", id);
+        countries,
+      } as any;
+
+      if (imgsNames.length) {
+        updated["prize1"] = imgsNames[0];
+        updated["prize2"] = imgsNames[1];
+        updated["prize3"] = imgsNames[2];
+      }
+      await db<Contest>("contests").update(updated).where("id", "=", id);
+      if (csv.length) {
+        await Promise.all(
+          csv.map((item) =>
+            tdb<Code>("codes").insert({
+              contest: id,
+              subscription: item[1],
+              serial: item[2],
+            })
+          )
+        );
+      }
+    });
 
     res.send("ok");
 
     axios
-      .get("http://localhost:3000/api/revalidate")
+      .get("http://localhost:3000/api/revalidate/?id=" + id)
       .catch((e) => console.log("front page is not active"));
   } catch (e) {
     res.sendStatus(500);

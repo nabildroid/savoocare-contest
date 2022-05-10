@@ -1,5 +1,7 @@
 import { useContext, useLayoutEffect, useRef, useState } from "react";
 import { AppContext } from "../../context";
+import { ContestContext } from "../../context/contestContext";
+import { SellerContext } from "../../context/sellerContest";
 import { Code } from "../../helpers/types";
 
 function classNames(...classes: string[]) {
@@ -7,15 +9,15 @@ function classNames(...classes: string[]) {
 }
 
 export default function Table() {
-  const { selectedSeller, codes, deleteCode, assign } = useContext(AppContext);
+  const { selected: sellectedSeller } = useContext(SellerContext);
+  const { codes, assignToSeller,deleteCode ,selected} = useContext(ContestContext);
 
   function deleteAll() {
-    codes.forEach((c) => deleteCode(c.serial));
+    if(confirm(`removing all the ${codes.length} codes from ${selected?.title}`)){
+    }
   }
 
-  function assignAll() {
-    codes.forEach((c) => assign(c.serial));
-  }
+  function assignAll() {}
 
   const checkbox = useRef<HTMLInputElement>(null!);
   const [checked, setChecked] = useState(false);
@@ -36,6 +38,12 @@ export default function Table() {
     setIndeterminate(false);
   }
 
+  function removeSerial(serial: string) {
+    if(confirm(`removing "${serial}" code from ${selected?.title}`)){
+      deleteCode(serial);
+    }
+  }
+
   return (
     <div className="sm:px-6 lg:px-8">
       <div className="mt-8 flex flex-col">
@@ -44,13 +52,13 @@ export default function Table() {
             <div className="relative overflow-hidden  ring-1 ring-black ring-opacity-5 md:rounded-lg">
               {selectedPeople.length > 0 && (
                 <div className="absolute top-0 left-12 flex h-12 items-center space-x-3 bg-gray-50 sm:left-16">
-                  {selectedSeller && (
+                  {sellectedSeller && (
                     <button
                       type="button"
                       onClick={assignAll}
                       className="inline-flex items-center rounded border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
                     >
-                      assign to {selectedSeller.name}
+                      assign to {sellectedSeller.name}
                     </button>
                   )}
                   <button
@@ -155,8 +163,8 @@ export default function Table() {
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-800">
                         <button
-                          disabled={!selectedSeller}
-                          onClick={() => assign(person.serial)}
+                          disabled={!sellectedSeller}
+                          onClick={() => assignToSeller(person.serial)}
                           className={classNames(
                             "border-b",
                             person.seller
@@ -169,7 +177,7 @@ export default function Table() {
                       </td>
                       <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <button
-                          onClick={() => deleteCode(person.serial)}
+                          onClick={() => removeSerial(person.serial)}
                           className="text-red-600 hover:text-red-900"
                         >
                           delete

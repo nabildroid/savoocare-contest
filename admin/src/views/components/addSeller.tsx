@@ -1,16 +1,16 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useContext, useState } from "react";
 import { AppContext } from "../../context";
+import { SellerContext } from "../../context/sellerContest";
 
 export default function AddSeller({ hide }: { hide: () => void }) {
-  const { addSeller } = useContext(AppContext);
+  const { add } = useContext(SellerContext);
 
   const [name, setName] = useState("");
 
   async function save() {
-    if (await addSeller(name)) {
-      hide();
-    }
+    add(name);
+    hide();
   }
 
   return (

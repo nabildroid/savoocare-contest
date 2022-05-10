@@ -38,7 +38,9 @@ api.post(
   body("name").isLength({ min: 8, max: 100 }),
   body("age").isInt({ min: 16, max: 80 }).toInt(),
   body("email").optional().isEmail(),
-  body("tel").isMobilePhone("any").toInt(),
+  body("tel")
+    .isString()
+    .matches(/\+\d+\-\d{10}$/g),
   body("address").isLength({ min: 3, max: 200 }),
   body("married").optional().isBoolean(),
 
@@ -57,7 +59,7 @@ api.post(
           email,
           address,
           married,
-          phone,
+          phone: parseInt(phone.split("-")[1]),
           subscription,
         });
 

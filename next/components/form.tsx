@@ -39,14 +39,17 @@ export default function Form({
   code,
   setName,
   setNumber,
+  countries,
 }: {
   code: string;
+  countries: number[];
   setName: (n: string) => void;
   setNumber: (n: number) => void;
 }) {
   const [isOpen, setIsOpen] = useState(true);
 
   const [isMarried, setIsMarried] = useState<boolean>();
+  const [country, setCountry] = useState<number>(countries[0]);
 
   function closeModal(name?: string, number?: number) {
     setIsOpen(false);
@@ -67,6 +70,7 @@ export default function Form({
       {
         ...data,
         married: isMarried,
+        tel: `+${country}-${data.tel}`,
       },
       code
     );
@@ -136,6 +140,7 @@ export default function Form({
                         />
                       </div>
                     </div>
+
                     <div className="sm:col-span-4">
                       <label
                         htmlFor="tel"
@@ -146,7 +151,27 @@ export default function Form({
                           *
                         </span>
                       </label>
-                      <div className="mt-1 flex rounded-md shadow-sm">
+                      <div className="mt-1 relative rounded-md shadow-sm">
+                        <div className="absolute inset-y-0 left-0 flex items-center">
+                          <label htmlFor="country" className="sr-only">
+                            Country
+                          </label>
+                          <select
+                            onChange={(e) =>
+                              setCountry(parseInt(e.target.value))
+                            }
+                            disabled={countries.length == 1}
+                            id="country"
+                            name="country"
+                            className="focus:ring-orange-500 focus:border-orange-500 h-full py-0 pl-3 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md"
+                          >
+                            {countries.map((c) => (
+                              <option value={c} selected={country == c}>
+                                +{c}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                         <input
                           {...register("tel", {
                             required: true,
@@ -156,7 +181,7 @@ export default function Form({
                           id="tel"
                           autoComplete="tel"
                           className={classNames(
-                            "flex-1 p-2 text-gray-900 rounded-md focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
+                            "flex-1 pl-24 p-2 text-gray-900 rounded-md focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
                             errors.tel ? "border-red-400" : ""
                           )}
                         />

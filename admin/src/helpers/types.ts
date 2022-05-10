@@ -10,11 +10,12 @@ export type Contest = {
   titleAr: string;
   start: Date;
   end: Date;
-  prizes: { name: string; image: string }[];
   selled: number;
   sellers: number;
   total: number;
   description: string;
+  completed: boolean;
+  countries: number[];
 };
 
 export type Code = {

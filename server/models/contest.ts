@@ -10,6 +10,10 @@ export async function createContestTable(knex: Knex.Knex) {
       table.string("description").notNullable();
       table.date("start").notNullable();
       table.date("end").notNullable();
+      table.string("countries").notNullable();
+      table.string("prize1").notNullable();
+      table.string("prize2").notNullable();
+      table.string("prize3").notNullable();
     });
   }
 }
@@ -20,5 +24,9 @@ export type Contest = {
   title_ar: string;
   start: Date;
   end: Date;
-  description:string,
+  description: string;
+  countries: string;
+  prize1: string;
+  prize2: string;
+  prize3: string;
 };

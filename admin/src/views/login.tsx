@@ -1,32 +1,18 @@
 import React, { useContext, useState } from "react";
 import { AppContext } from "../context";
+import { AuthContext } from "../context/authContest";
 
 const Login: React.FC = ({}) => {
-  const { login } = useContext(AppContext);
-
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
-
-  const submit = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    login(username, password).then((result) => {
-      if (result) {
-        setSuccess(true);
-      } else {
-        setError(true);
-        setLoading(false);
-        setPassword("");
-        setUsername("");
-        setTimeout(() => setError(false), 3000);
-      }
-    });
-  };
+  const {
+    setPassword,
+    password,
+    error,
+    loading,
+    setUsername,
+    submit,
+    success,
+    username,
+  } = useContext(AuthContext);
 
   return (
     <div className="w-screen h-screen bg-gray-200 flex items-center justify-center">

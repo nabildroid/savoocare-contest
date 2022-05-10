@@ -24,6 +24,8 @@ function createToken(name: string, type: Token["type"]) {
 export function validateToken(token: string) {
   return new Promise<Token>((res, failed) => {
     jwt.verify(token, env.JWT_SECRET, (err, decoded) => {
+      console.log(decoded, err);
+
       if (err) return failed();
       res(decoded as Token);
     });

@@ -110,19 +110,7 @@ export async function download(id: string) {
 
 export async function deleteContest(id: string): Promise<void> {}
 
-export async function login(name: string, password: string) {
-  try {
-    const { data } = await axios.post("../auth/login", { name, password });
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      setToken(data.token);
-      return true;
-    }
-  } catch (e) {}
-
-  return false;
-}
 
 export async function checkToken() {
   const token = localStorage.getItem("token");
@@ -135,15 +123,7 @@ export async function checkToken() {
 
 export function subscribeToAuth(fct: (isValide: boolean) => any) {
   console.log("subscribing to auth");
-  axios.interceptors.response.use(
-    (e) => e,
-    (e) => {
-      console.log("error###########");
-      localStorage.removeItem("token");
-      fct(false);
-      return Promise.reject(e);
-    }
-  );
+  
 }
 
 function setToken(token: string) {

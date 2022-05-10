@@ -62,7 +62,7 @@ export default function Thankyou({
                       Thank you {name} 💛
                     </Dialog.Title>
                     <Dialog.Description className="">
-                      you will receive a message on 0{number} for a confirmation
+                      you will receive a message on {number} for a confirmation
                     </Dialog.Description>
                   </div>
                 </Dialog.Panel>

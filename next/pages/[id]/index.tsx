@@ -1,31 +1,44 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import fs from "fs";
+import Action from "../../components/action";
 
-import Action from "../components/action";
-
-import { GetServerSideProps, GetStaticProps } from "next";
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import axios from "axios";
-import backgroundImage from "../public/background-1.png";
+import backgroundImage from "../../public/background-1.png";
 import { NextSeo } from "next-seo";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-const Steps = dynamic(() => import("../components/steps"));
+const Steps = dynamic(() => import("../../components/steps"));
 
-const Form = dynamic(() => import("../components/form"));
-const Thankyou = dynamic(() => import("../components/thankyou"));
+const Form = dynamic(() => import("../../components/form"));
+const Thankyou = dynamic(() => import("../../components/thankyou"));
 
 type Props = {
   year: number;
   title: string;
   titleAr: string;
   description: string;
+  prize1: string;
+  prize2: string;
+  prize3: string;
+  countries: number[];
 };
 
-const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
+const Home: React.FC<Props> = ({
+  prize1,
+  prize2,
+  prize3,
+  description,
+  title,
+  titleAr,
+  year,
+  countries,
+}) => {
   const [valideCode, setValideCode] = useState("");
   const [name, setName] = useState("");
   const [number, setNumber] = useState<number>(0);
@@ -37,7 +50,12 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
       <NextSeo title={`${title} - ${titleAr}`} description={description} />
       <div className="max-w-container mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-9 xl:pt-20 lg:pb-16">
         {valideCode && (
-          <Form code={valideCode} setName={setName} setNumber={setNumber} />
+          <Form
+            countries={countries}
+            code={valideCode}
+            setName={setName}
+            setNumber={setNumber}
+          />
         )}
         {name && <Thankyou name={name} number={number} />}
 
@@ -87,7 +105,7 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
               <div className="w-full rounded-md overflow-hidden lg:mx-0 h-32 lg:h-[265px] lg:w-[560px] relative">
                 <Image
                   layout="fill"
-                  src="/image 16.png"
+                  src={`/${prize1}.png`}
                   className="shadow-inner rounded-md w-full h-full object-cover"
                   alt="the first prize"
                   priority
@@ -97,7 +115,7 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
                 <div className="absolute group-hover:opacity-0 inset-0 from-transparent to-deeppurpel/80 z-10 bg-gradient-to-b"></div>
                 <Image
                   layout="fill"
-                  src="/image 18.png"
+                  src={`/${prize2}.png`}
                   className="shadow-inner rounded-md w-full h-full object-cover"
                   alt="the second prize"
                   loading="lazy"
@@ -108,7 +126,7 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
 
                 <Image
                   layout="fill"
-                  src="/image 17.png"
+                  src={`/${prize3}.png`}
                   className="shadow-inner rounded-md w-full h-full object-cover"
                   alt="the third prize"
                   loading="lazy"
@@ -122,7 +140,8 @@ const Home: React.FC<Props> = ({ description, title, titleAr, year }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps<Props> = async (props) => {
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const id = params!.id as string;
   const defaultProps = {
     redirect: {
       destination: "https://savoocare.com/",
@@ -132,24 +151,65 @@ export const getStaticProps: GetStaticProps<Props> = async (props) => {
       titleAr: "",
       year: 222,
       description: "",
+      prize1: "",
+      prize2: "",
+      prize3: "",
+      countries: [],
     },
   };
+
   try {
     const { data } = await axios.get(
-      "http://127.0.0.1:3002/internal/contest/latest"
+      "http://127.0.0.1:3002/internal/contest/" + id
+    );
+    const root = "/home/nabil/Desktop/";
+
+    if (!Object.keys(data).length) throw Error("empty");
+
+    fs.copyFileSync(
+      root + data.prize1 + ".png",
+      "./public/" + data.prize1 + ".png"
+    );
+    fs.copyFileSync(
+      root + data.prize2 + ".png",
+      "./public/" + data.prize2 + ".png"
+    );
+    fs.copyFileSync(
+      root + data.prize3 + ".png",
+      "./public/" + data.prize3 + ".png"
     );
 
+
+    
     return {
       props: {
         title: data.title,
         titleAr: data.title_ar,
         description: data.description,
         year: new Date().getFullYear(),
+        prize1: data.prize1,
+        prize2: data.prize2,
+        prize3: data.prize3,
+        countries: data.countries.split(",").filter(Boolean),
       },
     };
   } catch (e) {}
 
   return defaultProps;
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const { data } = await axios.get<string[]>(
+    "http://127.0.0.1:3002/internal/contest/"
+  );
+
+  return {
+    paths: data.map((id) => ({
+      params: { id: id.toString() },
+    })),
+
+    fallback: "blocking",
+  };
 };
 
 export default Home;

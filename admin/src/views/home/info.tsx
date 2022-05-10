@@ -3,12 +3,13 @@ import * as Server from "../../server";
 import Stats from "../components/stats";
 import { DownloadIcon } from "@heroicons/react/solid";
 import { AppContext } from "../../context";
+import { ContestContext } from "../../context/contestContext";
 
 export default function Info() {
-  const { selectedContest } = useContext(AppContext);
+  const { selected } = useContext(ContestContext);
 
   async function download() {
-    const url = await Server.download(selectedContest!.id);
+    const url = await Server.download(selected!.id);
     window.open(url, "_blank");
   }
   return (

@@ -1,35 +1,26 @@
-/* This example requires Tailwind CSS v2.0+ */
-import { ArrowSmDownIcon, ArrowSmUpIcon } from "@heroicons/react/solid";
 import { useContext, useMemo } from "react";
-import { AppContext } from "../../context";
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import { ContestContext } from "../../context/contestContext";
 
 export default function Stats() {
-  const { selectedContest } = useContext(AppContext);
+  const { selected } = useContext(ContestContext);
   const stats = useMemo(
     () => [
       {
         name: "Total Serials",
-        stat: selectedContest?.total ?? 0,
+        stat: selected?.total ?? 0,
       },
       {
         name: "Activated Serials",
-        stat:
-          Math.floor(
-            ((selectedContest?.selled ?? 0) / (selectedContest?.total ?? 1)) *
-              100
-          ) + "%",
+        stat: selected?.selled ?? 0,
       },
       {
         name: "Sellers",
-        stat: selectedContest?.sellers ?? 0,
+        stat: selected?.sellers ?? 0,
       },
     ],
-    [selectedContest]
+    [selected]
   );
+
   return (
     <div>
       <h3 className="text-lg leading-6 font-medium text-gray-900">

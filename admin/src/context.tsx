@@ -7,7 +7,6 @@ type Props = {
 };
 
 interface IAppProvider {
-  login(name: string, password: string): Promise<boolean>;
   authorized?: boolean;
 
   contests: Contest[];
@@ -50,7 +49,7 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   const [authorized, setAuthorized] = useState<boolean>();
 
   useEffect(() => {
-    Server.subscribeToAuth(setAuthorized);
+    // Server.subscribeToAuth(setAuthorized);
   }, []);
 
   useEffect(() => {
@@ -91,13 +90,6 @@ const AppProvider: React.FC<Props> = ({ children }) => {
       Server.getCodes(selectedContest.id, codePage, {}).then(setCodes);
     }
   }, [selectedContest, codePage, authorized]);
-
-  const login = async (name: string, password: string) => {
-    if (await Server.login(name, password)) {
-      setTimeout(() => setAuthorized(true), 2000);
-    }
-    return true;
-  };
 
   const assign = async (serial: string) => {
     if (!selectedSeller) return;
@@ -147,7 +139,6 @@ const AppProvider: React.FC<Props> = ({ children }) => {
     assign,
     authorized,
     sellers,
-    login,
     selectContest: setContest,
     selectSeller: setSeller,
     selectedContest,

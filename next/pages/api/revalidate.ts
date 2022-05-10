@@ -1,8 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(_: never, res: NextApiResponse) {
+export default async function handler(
+  request: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
-    await res.unstable_revalidate("/");
+    const id = request.query.id as string;
+
+    await res.unstable_revalidate("/" + id);
     return res.json({ revalidated: true });
   } catch (err) {
     // If there was an error, Next.js will continue
