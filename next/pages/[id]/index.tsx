@@ -162,7 +162,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
     const { data } = await axios.get(
       "http://127.0.0.1:3002/internal/contest/" + id
     );
-    const root = "/home/nabil/Desktop/";
+    const root = process.env.PRIZE_LOCATIONS ?? "/home/nabil/Desktop/";
 
     if (!Object.keys(data).length) throw Error("empty");
 
@@ -179,8 +179,6 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
       "./public/" + data.prize3 + ".png"
     );
 
-
-    
     return {
       props: {
         title: data.title,

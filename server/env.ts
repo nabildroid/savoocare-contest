@@ -12,6 +12,7 @@ const env = cleanEnv(process.env, {
   DASHBOARD_PASSWORD: str({ default: "admin" }),
   JWT_SECRET: str({ default: "ilk2" }),
   APPLICATIONS_FILE_PREFIX: str({ default: "savoo" }),
+  PRIZE_LOCATIONS: str({ default: "/home/nabil/Desktop/" }),
 });
 
 export default env;

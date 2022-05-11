@@ -180,9 +180,9 @@ api.post("/contest", cUploads, async (req, res) => {
   const imgsNames = imgs.map((e) => e.filename);
   const imgsPaths = imgs.map((e) => e.path);
 
-  // imgsPaths.forEach((img, i) =>
-  //   fs.copyFileSync(img, "~/Desktop/" + imgsNames[i] + ".png")
-  // );
+  imgsPaths.forEach((img, i) =>
+    fs.copyFileSync(img, env.PRIZE_LOCATIONS + imgsNames[i] + ".png")
+  );
 
   csv.shift();
   if (!csv[csv.length - 1][0]) {

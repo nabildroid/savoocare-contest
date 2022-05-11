@@ -9,6 +9,8 @@ export APPLICATIONS_FILE_PREFIX="savoo"
 export DASHBOARD_USER="admin"
 export DASHBOARD_PASSWORD="admin"
 
+export PRIZE_LOCATIONS="/usr/images/"
+
 
 
 
