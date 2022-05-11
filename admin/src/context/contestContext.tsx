@@ -11,6 +11,12 @@ type ContestFiles = {
   imgs: [FileList, FileList, FileList];
 };
 
+export async function Download(id: string) {
+  const { data } = await Http.get(`/contest/${id}/applications`);
+  const root = import.meta.env.PROD ? "/admin/" : "file:///tmp/";
+  return `${root}${data}` as string;
+}
+
 export async function UpdateContest(
   id: string,
   contest: Entity<Contest>,
@@ -121,6 +127,7 @@ interface IContestProvider {
     files: Partial<ContestFiles>
   ): Promise<void>;
   newContest(contest: Entity<Contest>, files: ContestFiles): Promise<void>;
+  downloadContest(): Promise<string>;
 }
 
 export const ContestContext = createContext<IContestProvider>({
@@ -236,6 +243,12 @@ const ContestProvider: React.FC<Props> = ({ children }) => {
     select(newCont);
   }
 
+  async function downloadContest() {
+    const id = selected!.id;
+    const url = await Download(id);
+    return url;
+  }
+
   const values: IContestProvider = {
     newContest,
     updateContest,
@@ -251,6 +264,7 @@ const ContestProvider: React.FC<Props> = ({ children }) => {
     assignToSeller,
     selected,
     items,
+    downloadContest,
   };
 
   return (

@@ -41,7 +41,7 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   const [innerLoading, setInnerLoading] = useState(false);
 
   const [isNewContest, setIsNewContest] = useState(false);
-  const [section, setSection] = useState<Page>(Page.codes);
+  const [section, setSection] = useState<Page>(Page.info);
 
   useEffect(() => {
     if (section != Page.settings) setIsNewContest(false);

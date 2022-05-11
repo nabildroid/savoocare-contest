@@ -90,8 +90,8 @@ const AuthProvider: React.FC<Props> = ({ children, login }) => {
     Http.interceptors.response.use(
       (e) => e,
       (e) => {
-        // setAuth(false);
-        // throwToken();
+        setAuth(false);
+        throwToken();
         return Promise.reject(e);
       }
     );

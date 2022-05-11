@@ -6,6 +6,7 @@ import fs from "fs";
 import { Application, Code, Contest, Seller } from "../models";
 import { validateToken } from "./auth";
 import env from "../env";
+import writeXlsxFile from "write-excel-file";
 
 import Crypto from "node:crypto";
 
@@ -358,29 +359,38 @@ api.get("/contest/:id/applications", async (req, res) => {
   const { id } = req.params;
 
   const apps = await db<Code>("codes")
-    .where("contest", "=", id)
-    .where("selled", "=", 1)
-    .join("applications", "codes.subscription", "applications.subscription")
-    .select(
-      "applications.id",
-      "applications.name",
-      "applications.age",
-      "applications.phone",
-      "applications.address",
-      "applications.email",
-      "applications.married"
-    );
+    .join("contests", "contests.id", "codes.contest")
+    .leftJoin("applications", "applications.subscription", "codes.subscription")
+    .select({
+      title: "contests.title",
+      serial: "codes.serial",
+      seller: "codes.seller",
+      activated: "codes.selled",
+      app_name: "applications.name",
+      app_age: "applications.age",
+      app_phone: "applications.phone",
+      app_email: "applications.email",
+      app_married: "applications.married",
+      app_address: "applications.address",
+      app_created: "applications.created_at",
+    });
 
-  let csv = "id,name,age,phone,address,email,married\n";
+  console.log(apps);
+  let csv =
+    "contest title,serial code,seller,activated,name,address,age,phone,email,married, applied at\n";
 
   apps.forEach((app) => {
-    csv += app["id"] + ",";
-    csv += app["name"].replace(",", " ") + ",";
-    csv += app["age"] + ",";
-    csv += app["phone"] + ",";
-    csv += app["address"].replace(",", " ") + ",";
-    csv += app["email"] + ",";
-    csv += (app["married"] ?? "#") + ",";
+    csv += app["title"].replace(",", " ") + ",";
+    csv += app["serial"].replace(",", " ") + ",";
+    csv += app["seller"] + ",";
+    csv += (app["activated"] ? "activated" : "open") + ",";
+    csv += (app["app_name"] ?? "").replace(",", " ") + ",";
+    csv += (app["app_address"] ?? "").replace(",", " ") + ",";
+    csv += app["app_age"] + ",";
+    csv += (app["app_phone"] ?? "") + ",";
+    csv += (app["app_email"] ?? "").replace(",", " ") + ",";
+    csv += app["app_married"] + ",";
+    csv += ((app["app_created"] as Date | undefined) ?? "")?.toString() + ",";
     csv += "\n";
   });
 

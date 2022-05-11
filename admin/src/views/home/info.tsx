@@ -6,10 +6,10 @@ import { AppContext } from "../../context";
 import { ContestContext } from "../../context/contestContext";
 
 export default function Info() {
-  const { selected } = useContext(ContestContext);
+  const { selected, downloadContest } = useContext(ContestContext);
 
   async function download() {
-    const url = await Server.download(selected!.id);
+    const url = await downloadContest();
     window.open(url, "_blank");
   }
   return (

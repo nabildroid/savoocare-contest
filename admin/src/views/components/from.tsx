@@ -12,10 +12,9 @@ import Country from "./country";
 import { classNames } from "../../helpers/utils";
 
 function formatDate(d: Date) {
-  return `${d.getFullYear()}-${d.getDay().toString().padStart(2, "0")}-${d
-    .getDate()
+  return `${d.getFullYear()}-${(d.getMonth() + 1)
     .toString()
-    .padStart(2, "0")}`;
+    .padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
 }
 
 export default function Form() {
@@ -64,7 +63,7 @@ export default function Form() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-
+    setLoading(true);
     if (isNewContest) {
       if (!file || imgs.some((e) => !e)) return;
 
@@ -103,6 +102,7 @@ export default function Form() {
         }
       );
     }
+    setLoading(false);
   }
 
   return (
@@ -181,6 +181,7 @@ export default function Form() {
                   value={formatDate(startDate!)}
                   onChange={(e) => setStartDate(new Date(e.target.value))}
                   type="date"
+                  min={formatDate(new Date())}
                   name="start-day"
                   id="start-day"
                   className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 shadow-sm  mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
@@ -201,6 +202,7 @@ export default function Form() {
                   value={formatDate(endDate!)}
                   onChange={(e) => setEndDate(new Date(e.target.value))}
                   type="date"
+                  min={formatDate(new Date())}
                   name="end-day"
                   id="end-day"
                   className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 shadow-sm  mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
