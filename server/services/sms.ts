@@ -1,6 +1,18 @@
+import Twilio from "twilio";
+
 export default class SMS {
-  constructor(auth: string) {}
-  async send(msg: string) {
-    console.log("sending an SMS ...");
+  client: Twilio.Twilio;
+  sender: string;
+  constructor(sid: string, token: string, sender: string) {
+    this.client = Twilio(sid, token);
+    this.sender = sender;
+  }
+
+  async send(msg: string, phone: string) {
+    return this.client.messages.create({
+      from: this.sender,
+      to: phone,
+      body: msg,
+    });
   }
 }

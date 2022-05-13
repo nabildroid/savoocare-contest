@@ -10,11 +10,9 @@ import SMS from "./services/sms";
 
 const app = Express();
 
-app.use("/nextstatic/",Express.static("/usr/images/"));
+app.use("/nextstatic/", Express.static(env.PRIZE_LOCATIONS));
 
-
-
-export const sms = new SMS("dsd");
+export const sms = new SMS(env.TWILIO_SID, env.TWILIO_TOKEN, env.TWILIO_PHONE);
 
 app.use(cors());
 

@@ -67,7 +67,10 @@ api.post(
           .update("selled", "1")
           .where("subscription", "=", subscription);
 
-        sms.send(`thank you ${name} for participating in our contest`);
+        sms.send(
+          `thank you ${name} for participating in our contest`,
+          phone.replace("-", "")
+        );
 
         return res.send("done");
       } catch (e) {
