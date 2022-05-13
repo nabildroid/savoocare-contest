@@ -299,7 +299,7 @@ api.patch("/contest/:id", cUploads, async (req, res) => {
       const imgsPaths = imgs.map((e) => e.path);
 
       imgsPaths.forEach((img, i) =>
-        fs.copyFileSync(img, "/home/nabil/Desktop/" + imgsNames[i] + ".png")
+        fs.copyFileSync(img, env.PRIZE_LOCATIONS + imgsNames[i] + ".png")
       );
     }
   }
