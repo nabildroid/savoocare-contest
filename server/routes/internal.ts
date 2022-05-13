@@ -12,7 +12,7 @@ api.get("/contest/:id", async (req, res) => {
     .limit(1)
     .select("*");
 
-  if (contest.length && Date.now() < contest[0].end.getTime())
+  if (contest.length && Date.now() < contest[0].end.getTime() && Date.now() > contest[0].start.getTime())
     return res.json(contest[0]);
 
   res.send({});

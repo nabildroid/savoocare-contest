@@ -78,7 +78,8 @@ async function getContests(): Promise<Contest[]> {
     end: new Date(d.end),
     countries: (d.countries as any as string)
       .split(",")
-      .map((e) => parseInt(e)).filter(Boolean),
+      .map((e) => parseInt(e))
+      .filter(Boolean),
   }));
 }
 
@@ -240,7 +241,9 @@ const ContestProvider: React.FC<Props> = ({ children }) => {
   async function newContest(contest: Entity<Contest>, files: ContestFiles) {
     const newCont = await CreateContest(contest, files);
     setItems((i) => [newCont, ...i]);
+
     select(newCont);
+    app.setIsNewContest(false);
   }
 
   async function downloadContest() {

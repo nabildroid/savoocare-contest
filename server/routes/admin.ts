@@ -308,7 +308,7 @@ api.patch("/contest/:id", cUploads, async (req, res) => {
     await knex.transaction(async (tdb) => {
       const updated = {
         end: new Date(parseInt(end)),
-        start: new Date(parseInt(end)),
+        start: new Date(parseInt(start)),
         title: title,
         title_ar: titleAr,
         description,

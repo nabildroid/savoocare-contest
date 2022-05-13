@@ -1,11 +1,23 @@
-import { Fragment, useContext } from "react";
+import { Fragment, useContext, useMemo } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, SelectorIcon, PlusIcon } from "@heroicons/react/solid";
+import {
+  CheckIcon,
+  SelectorIcon,
+  LightningBoltIcon,
+  PlusIcon,
+} from "@heroicons/react/solid";
 import { AppContext } from "../../context/appContext";
 import { ContestContext } from "../../context/contestContext";
+import { Contest } from "../../helpers/types";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
+}
+
+function isActive(contest: Contest) {
+  return (
+    Date.now() < contest.end.getTime() && Date.now() > contest.start.getTime()
+  );
 }
 
 const SelectBox: React.FC = ({}) => {
@@ -16,6 +28,11 @@ const SelectBox: React.FC = ({}) => {
     console.log("new contest ....");
     setIsNewContest(true);
   };
+
+  const sortedItems = useMemo(
+    () => items.sort((a, b) => a.start.getTime() - b.start.getTime()),
+    [items]
+  );
 
   return (
     <div className="flex   items-center space-x-2">
@@ -53,7 +70,7 @@ const SelectBox: React.FC = ({}) => {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                {items.map((item) => (
+                {sortedItems.map((item) => (
                   <Listbox.Option
                     key={item.id}
                     className={({ active }) =>
@@ -85,6 +102,20 @@ const SelectBox: React.FC = ({}) => {
                             <CheckIcon className="h-5 w-5" aria-hidden="true" />
                           </span>
                         ) : null}
+
+                        {isActive(item) && (
+                          <span
+                            className={classNames(
+                              "text-[#F7D63D]",
+                              "absolute inset-y-0 right-2 flex items-center pl-r.5"
+                            )}
+                          >
+                            <LightningBoltIcon
+                              className="h-4 w-4 "
+                              aria-hidden="true"
+                            />
+                          </span>
+                        )}
                       </>
                     )}
                   </Listbox.Option>
