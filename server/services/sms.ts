@@ -10,7 +10,7 @@ export default class SMS {
 
   async send(msg: string, phone: string) {
     return this.client.messages.create({
-      from: this.sender,
+      from: "SAVOO CARE",
       to: phone,
       body: msg,
     });
