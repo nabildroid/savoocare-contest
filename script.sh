@@ -1,3 +1,4 @@
+#!/bin/bash
 
 export SITE_NAME="Savoo - contest"
 export DB_NAME="contest"
