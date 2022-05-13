@@ -28,7 +28,7 @@ api.use((req, res, next) => {
 });
 
 const isSubscriptionCode = (x: string) =>
-  (x.match(/\d{3}(\d|[A-F]){5}/) ?? [])[0] == x;
+  x.toString().length > 4 && (x.match(/(\d|[A-F])+/) ?? [])[0] == x;
 
 async function validateCode(code: string, countries: number[]) {
   if (code.length != 8 || !isSubscriptionCode(code)) {

@@ -190,24 +190,23 @@ api.post("/contest", cUploads, async (req, res) => {
   }
 
   let id = "";
+  const newContest = {
+    end: new Date(parseInt(end)),
+    start: new Date(parseInt(start)),
+    title: title,
+    title_ar: titleAr,
+    description,
+    countries,
+    prize1: imgsNames[0],
+    prize2: imgsNames[1],
+    prize3: imgsNames[2],
+  };
   await knex.transaction(async (tdb) => {
     id = (
-      await tdb<Contest>("contests")
-        .insert({
-          end: new Date(parseInt(end)),
-          start: new Date(parseInt(end)),
-          title: title,
-          title_ar: titleAr,
-          description,
-          countries,
-          prize1: imgsNames[0],
-          prize2: imgsNames[1],
-          prize3: imgsNames[2],
-        })
-        .select("id")
+      await tdb<Contest>("contests").insert(newContest).select("id")
     )[0].toString();
 
-    console.log(id);
+    (newContest as any)["id"] = id;
 
     await Promise.all(
       csv.map((item) =>
@@ -221,14 +220,9 @@ api.post("/contest", cUploads, async (req, res) => {
   });
 
   res.json({
-    id,
-    end: new Date(end),
-    start: new Date(start),
-    title,
-    titleAr,
     sellers: 0,
     total: 0,
-    countries,
+    ...newContest,
   });
 });
 

@@ -17,7 +17,7 @@ async function checkCode(code: string) {
 }
 
 const isSubscriptionCode = (x: string) =>
-  (x.match(/\d{3}(\d|[A-F]){5}/) ?? [])[0] == x;
+  x.toString().length > 4 && (x.match(/(\d|[A-F])+/) ?? [])[0] == x;
 
 type Props = {
   setValideCode: (str: string) => void;

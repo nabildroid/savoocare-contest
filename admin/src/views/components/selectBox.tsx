@@ -29,6 +29,7 @@ const SelectBox: React.FC = ({}) => {
     setIsNewContest(true);
   };
 
+  console.log(items);
   const sortedItems = useMemo(
     () => items.sort((a, b) => a.start.getTime() - b.start.getTime()),
     [items]

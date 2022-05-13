@@ -182,6 +182,7 @@ const ContestProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     setCodes([]);
     app.setInnerLoading(true);
+    app.setIsNewContest(false);
     app.setInnerLoading(false);
   }, [selected]);
 
@@ -192,7 +193,7 @@ const ContestProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     if (items.length) {
-      select(items[items.length - 1]);
+      select(items[0]);
     }
   }, [items]);
 
@@ -239,11 +240,19 @@ const ContestProvider: React.FC<Props> = ({ children }) => {
   }
 
   async function newContest(contest: Entity<Contest>, files: ContestFiles) {
-    const newCont = await CreateContest(contest, files);
+    const data = await CreateContest(contest, files);
+    const newCont: Contest = {
+      ...data,
+      end: new Date(data.end),
+      start: new Date(data.start),
+      countries: (data.countries as any)
+        .split(",")
+        .filter(Boolean)
+        .map(parseInt),
+    };
     setItems((i) => [newCont, ...i]);
 
     select(newCont);
-    app.setIsNewContest(false);
   }
 
   async function downloadContest() {
