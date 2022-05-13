@@ -33,7 +33,7 @@ export async function UpdateContest(
   formData.append("start", contest.start.getTime().toString());
   formData.append("end", contest.end.getTime().toString());
   formData.append("description", contest.description);
-  formData.append("countries", contest.countries.join(","));
+  formData.append("countries", contest.countries.filter(Boolean).join(","));
 
   await Http.patch("/contest/" + id, formData, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -55,7 +55,7 @@ export async function CreateContest(
   formData.append("start", contest.start.getTime().toString());
   formData.append("end", contest.end.getTime().toString());
   formData.append("description", contest.description);
-  formData.append("countries", contest.countries.join(","));
+  formData.append("countries", contest.countries.filter(Boolean).join(","));
 
   const { data } = await Http.post("/contest", formData, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -78,7 +78,7 @@ async function getContests(): Promise<Contest[]> {
     end: new Date(d.end),
     countries: (d.countries as any as string)
       .split(",")
-      .map((e) => parseInt(e)),
+      .map((e) => parseInt(e)).filter(Boolean),
   }));
 }
 
