@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["savoocare.com"],
+    domains: ["savoocare.com", "localhost"],
   },
   experimental: { images: { layoutRaw: true } },
 };

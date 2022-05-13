@@ -10,6 +10,9 @@ import SMS from "./services/sms";
 
 const app = Express();
 
+app.use("/nextstatic/",Express.static("/usr/images/"));
+
+
 
 export const sms = new SMS("dsd");
 

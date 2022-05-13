@@ -105,7 +105,7 @@ const Home: React.FC<Props> = ({
               <div className="w-full rounded-md overflow-hidden lg:mx-0 h-32 lg:h-[265px] lg:w-[560px] relative">
                 <Image
                   layout="fill"
-                  src={`/${prize1}.png`}
+                  src={prize1}
                   className="shadow-inner rounded-md w-full h-full object-cover"
                   alt="the first prize"
                   priority
@@ -115,7 +115,7 @@ const Home: React.FC<Props> = ({
                 <div className="absolute group-hover:opacity-0 inset-0 from-transparent to-deeppurpel/80 z-10 bg-gradient-to-b"></div>
                 <Image
                   layout="fill"
-                  src={`/${prize2}.png`}
+                  src={prize2}
                   className="shadow-inner rounded-md w-full h-full object-cover"
                   alt="the second prize"
                   loading="lazy"
@@ -126,7 +126,7 @@ const Home: React.FC<Props> = ({
 
                 <Image
                   layout="fill"
-                  src={`/${prize3}.png`}
+                  src={prize3}
                   className="shadow-inner rounded-md w-full h-full object-cover"
                   alt="the third prize"
                   loading="lazy"
@@ -162,22 +162,10 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
     const { data } = await axios.get(
       "http://127.0.0.1:3002/internal/contest/" + id
     );
-    const root = process.env.PRIZE_LOCATIONS ?? "/home/nabil/Desktop/";
 
     if (!Object.keys(data).length) throw Error("empty");
 
-    fs.copyFileSync(
-      root + data.prize1 + ".png",
-      "./public/" + data.prize1 + ".png"
-    );
-    fs.copyFileSync(
-      root + data.prize2 + ".png",
-      "./public/" + data.prize2 + ".png"
-    );
-    fs.copyFileSync(
-      root + data.prize3 + ".png",
-      "./public/" + data.prize3 + ".png"
-    );
+    const root = (x: string) => `http://localhost:3002/nextstatic/${x}.png`;
 
     return {
       props: {
@@ -185,9 +173,9 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
         titleAr: data.title_ar,
         description: data.description,
         year: new Date().getFullYear(),
-        prize1: data.prize1,
-        prize2: data.prize2,
-        prize3: data.prize3,
+        prize1: root(data.prize1),
+        prize2: root(data.prize2),
+        prize3: root(data.prize3),
         countries: data.countries.split(",").filter(Boolean),
       },
     };
