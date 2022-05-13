@@ -1,6 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useForm } from "react-hook-form";
-
 import React, { Fragment, useState } from "react";
 import Radio from "./radio";
 
@@ -33,6 +32,7 @@ async function apply(application: Application, code: string) {
   } catch (e) {
     // todo add logging system!
   }
+  return false;
 }
 
 export default function Form({
@@ -51,6 +51,8 @@ export default function Form({
   const [isMarried, setIsMarried] = useState<boolean>();
   const [country, setCountry] = useState<number>(countries[0]);
 
+  const [phoneError, setPhoneError] = useState<string>("");
+
   function closeModal(name?: string, number?: number) {
     setIsOpen(false);
     if (name) {
@@ -65,16 +67,22 @@ export default function Form({
     formState: { errors },
   } = useForm<Application>();
 
+  console.log(errors);
   const onSubmit = async (data: any) => {
-    await apply(
-      {
-        ...data,
-        married: isMarried,
-        tel: `+${country}-${data.tel}`,
-      },
-      code
-    );
-    closeModal(data.name, data.tel);
+    if (
+      await apply(
+        {
+          ...data,
+          married: isMarried,
+          tel: `+${country}-${data.tel}`,
+        },
+        code
+      )
+    ) {
+      closeModal(data.name, data.tel);
+    } else {
+      setPhoneError("error");
+    }
   };
 
   return (
@@ -127,18 +135,23 @@ export default function Form({
                           *
                         </span>
                       </label>
-                      <div className="mt-1 flex rounded-md shadow-sm">
+                      <div className="mt-1 relative flex rounded-md shadow-sm">
                         <input
-                          {...register("name")}
+                          {...register("name", { required: true })}
                           type="text"
                           id="fullname"
                           autoComplete="name"
                           className={classNames(
-                            "flex-1 p-2 text-gray-900 rounded-md focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
-                            errors.name ? "border-red-400" : ""
+                            "flex-1 p-2 text-gray-900 rounded-md  focus:border-transparent border focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
+                            errors.name ? "border-red-600" : ""
                           )}
                         />
                       </div>
+                      {errors.name && (
+                        <span className="text-xs font-serif -mt-1 font-medium text-red-700">
+                          please enter your first name
+                        </span>
+                      )}
                     </div>
 
                     <div className="sm:col-span-4">
@@ -175,17 +188,30 @@ export default function Form({
                         <input
                           {...register("tel", {
                             required: true,
-                            pattern: /0\d{9}/,
+                            pattern: /0?\d{9}/,
                           })}
                           type="tel"
                           id="tel"
                           autoComplete="tel"
                           className={classNames(
-                            "flex-1 pl-24 p-2 text-gray-900 rounded-md focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
-                            errors.tel ? "border-red-400" : ""
+                            "flex-1 pl-24 p-2 text-gray-900 rounded-md  focus:border-transparent border focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
+                            errors.tel || phoneError ? "border-red-400" : ""
                           )}
                         />
                       </div>
+                      {(errors.tel || phoneError) && (
+                        <span className="text-xs font-serif -mt-1 font-medium text-red-700">
+                          {errors.tel && (
+                            <span>please enter a valide phone number </span>
+                          )}
+
+                          {phoneError && (
+                            <span>
+                              please choose your correct <b>country code</b>
+                            </span>
+                          )}
+                        </span>
+                      )}
                     </div>
                     <div className="sm:col-span-4">
                       <label
@@ -201,11 +227,16 @@ export default function Form({
                           id="email"
                           autoComplete="email"
                           className={classNames(
-                            "flex-1 p-2 text-gray-900 rounded-md focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
+                            "flex-1 p-2 text-gray-900 rounded-md  focus:border-transparent border focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
                             errors.email ? "border-red-400" : ""
                           )}
                         />
                       </div>
+                      {errors.email && (
+                        <span className="text-xs font-serif -mt-1 font-medium text-red-700">
+                          please enter a correct E-mail
+                        </span>
+                      )}
                     </div>
 
                     <div className="sm:col-span-4">
@@ -229,11 +260,16 @@ export default function Form({
                           id="age"
                           autoComplete="age"
                           className={classNames(
-                            "flex-1 p-2 text-gray-900 rounded-md focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
+                            "flex-1 p-2 text-gray-900 rounded-md  focus:border-transparent border focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
                             errors.age ? "border-red-400" : ""
                           )}
                         />
                       </div>
+                      {errors.age && (
+                        <span className="text-xs font-serif -mt-1 font-medium text-red-700">
+                          your must be +16 to participate
+                        </span>
+                      )}
                     </div>
 
                     <div className="sm:col-span-4">
@@ -253,11 +289,16 @@ export default function Form({
                           id="address"
                           autoComplete="street-address"
                           className={classNames(
-                            "flex-1 p-2 text-gray-900 rounded-md focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
+                            "flex-1 p-2 text-gray-900 rounded-md  focus:border-transparent border focus:ring-2 outline-none focus:ring-specialorange  block w-full min-w-0  sm:text-sm border-gray-300",
                             errors.address ? "border-red-400" : ""
                           )}
                         />
                       </div>
+                      {errors.address && (
+                        <span className="text-xs font-serif -mt-1 font-medium text-red-700">
+                          please enter your address
+                        </span>
+                      )}
                     </div>
                     <div className="sm:col-span-4">
                       <label
@@ -270,11 +311,13 @@ export default function Form({
                     </div>
 
                     <div className="sm:col-span-6 text-center">
-                      <input
+                      <button
                         type="submit"
-                        className="w-full py-3 text-white uppercase bg-deeppurpel rounded-lg shadow-lg mx-auto"
-                        value="Add Me"
-                      />
+                        className="w-full py-3 text-white uppercase hover:bg-deeppurpel/90 bg-deeppurpel rounded-lg shadow-lg mx-auto"
+                        value=""
+                      >
+                        <span>Add Me</span>
+                      </button>
                     </div>
                   </div>
                 </Dialog.Panel>
