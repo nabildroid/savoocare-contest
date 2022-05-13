@@ -12,7 +12,7 @@ export default function Settings() {
         <h2 className="font-mono text-xl text-orange-600">
           URL:
           <a href={`../${selected?.id}`} className=" ">
-            https://contest.com/<i>{selected?.id}</i>
+            {window.origin}/<i>{selected?.id}</i>
           </a>
         </h2>
       )}
