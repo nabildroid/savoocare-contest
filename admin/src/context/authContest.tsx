@@ -34,10 +34,13 @@ function throwToken() {
     Http.interceptors.request.eject(interceptorId);
   }
   save("");
+  window.location.reload();
 }
 
 function loadToken() {
   const token = load();
+  console.log("previous token", token);
+
   if (token) {
     enjectToken(token);
     return true;
@@ -49,7 +52,6 @@ async function Login(name: string, password: string) {
   const { data } = await Http.post("../auth/login", { name, password });
 
   if (data.token) {
-    save("");
     enjectToken(data.token);
     return true;
   }
