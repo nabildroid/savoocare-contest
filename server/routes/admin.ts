@@ -174,7 +174,10 @@ api.post("/contest", cUploads, async (req, res) => {
   const files = (req as any).files;
   const data = fs.readFileSync(files.csv[0].path, "utf8");
 
-  const csv = data.split("\n").map((e) => e.split(","));
+  let csv = data.split("\n").map((e) => e.split(","));
+  csv.shift();
+  csv = csv.filter((i) => i.every((q) => !!q));
+
 
   const imgs = [files.prize1[0], files.prize2[0], files.prize3[0]];
   const imgsNames = imgs.map((e) => e.filename);
@@ -184,10 +187,7 @@ api.post("/contest", cUploads, async (req, res) => {
     fs.copyFileSync(img, env.PRIZE_LOCATIONS + imgsNames[i] + ".png")
   );
 
-  csv.shift();
-  if (!csv[csv.length - 1][0]) {
-    csv.pop();
-  }
+
 
   let id = "";
   const newContest = {
@@ -283,9 +283,8 @@ api.patch("/contest/:id", cUploads, async (req, res) => {
 
       csv = data.split("\n").map((e) => e.split(","));
       csv.shift();
-      if (!csv[csv.length - 1][0]) {
-        csv.pop();
-      }
+
+      csv = csv.filter((i) => i.every((q) => !!q));
     }
     if (files.prize1) {
       const imgs = [files.prize1[0], files.prize2[0], files.prize3[0]];
