@@ -145,7 +145,9 @@ api.post("/seller", async (req, res) => {
 api.post("/sellers/assign/:seller/:serial", async (req, res) => {
   const { seller, serial } = req.params;
 
-  await db<Code>("codes").update("seller", seller).where("serial", "=", serial);
+  await db<Code>("codes")
+    .update("seller", seller)
+    .where("serial", "=", parseInt(serial));
   res.send("ok");
 });
 
@@ -155,7 +157,7 @@ api.delete("/code/:serial", async (req, res) => {
   // todo delete first all the subscriptions
 
   const subscription = (
-    await db<Code>("codes").where("serial", "=", serial).select("subscription")
+    await db<Code>("codes").where("serial", "=", parseInt(serial)).select("subscription")
   )[0];
 
   if (subscription) {
@@ -164,7 +166,7 @@ api.delete("/code/:serial", async (req, res) => {
       .where("subscription", "=", subscription.toString());
   }
 
-  await db<Code>("codes").del().where("serial", "=", serial);
+  await db<Code>("codes").del().where("serial", "=", parseInt(serial));
   res.send("ok");
 });
 
@@ -178,7 +180,6 @@ api.post("/contest", cUploads, async (req, res) => {
   csv.shift();
   csv = csv.filter((i) => i.every((q) => !!q));
 
-
   const imgs = [files.prize1[0], files.prize2[0], files.prize3[0]];
   const imgsNames = imgs.map((e) => e.filename);
   const imgsPaths = imgs.map((e) => e.path);
@@ -186,8 +187,6 @@ api.post("/contest", cUploads, async (req, res) => {
   imgsPaths.forEach((img, i) =>
     fs.copyFileSync(img, env.PRIZE_LOCATIONS + imgsNames[i] + ".png")
   );
-
-
 
   let id = "";
   const newContest = {
@@ -374,7 +373,7 @@ api.get("/contest/:id/applications", async (req, res) => {
 
   apps.forEach((app) => {
     csv += app["title"].replace(",", " ") + ",";
-    csv += app["serial"].replace(",", " ") + ",";
+    csv += app["serial"].replace("\r","").replace(",", " ") + ",";
     csv += app["seller"] + ",";
     csv += (app["activated"] ? "activated" : "open") + ",";
     csv += (app["app_name"] ?? "").replace(",", " ") + ",";
