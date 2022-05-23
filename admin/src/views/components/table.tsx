@@ -10,20 +10,33 @@ function classNames(...classes: string[]) {
 
 export default function Table() {
   const { selected: sellectedSeller } = useContext(SellerContext);
-  const { codes, assignToSeller,deleteCode ,selected} = useContext(ContestContext);
+  const { codes, assignToSeller, deleteCode, selected } =
+    useContext(ContestContext);
 
-  function deleteAll() {
-    if(confirm(`removing all the ${codes.length} codes from ${selected?.title}`)){
-    }
-  }
+  
 
-  function assignAll() {}
-
+  
   const checkbox = useRef<HTMLInputElement>(null!);
   const [checked, setChecked] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<Code[]>([]);
 
+
+  function assignAll() {
+    selectedPeople.forEach((code) => {
+      assignToSeller(code.serial);
+    });
+  }
+
+  function deleteAll() {
+    if (
+      confirm(`removing all the ${codes.length} codes from ${selected?.title}`)
+    ) {
+      selectedPeople.forEach((code) => {
+        deleteCode(code.serial);
+      });
+    }
+  }
   useLayoutEffect(() => {
     const isIndeterminate =
       selectedPeople.length > 0 && selectedPeople.length < codes.length;
@@ -39,7 +52,7 @@ export default function Table() {
   }
 
   function removeSerial(serial: string) {
-    if(confirm(`removing "${serial}" code from ${selected?.title}`)){
+    if (confirm(`removing "${serial}" code from ${selected?.title}`)) {
       deleteCode(serial);
     }
   }

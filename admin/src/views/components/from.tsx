@@ -181,7 +181,7 @@ export default function Form() {
                   value={formatDate(startDate!)}
                   onChange={(e) => setStartDate(new Date(e.target.value))}
                   type="date"
-                  min={formatDate(new Date())}
+                  min={formatDate(startDate)}
                   name="start-day"
                   id="start-day"
                   className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 shadow-sm  mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
@@ -202,7 +202,7 @@ export default function Form() {
                   value={formatDate(endDate!)}
                   onChange={(e) => setEndDate(new Date(e.target.value))}
                   type="date"
-                  min={formatDate(new Date())}
+                  min={formatDate(startDate)}
                   name="end-day"
                   id="end-day"
                   className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 p-2 shadow-sm  mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
