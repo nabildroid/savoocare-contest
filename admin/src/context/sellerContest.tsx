@@ -35,6 +35,11 @@ async function Assign(serial: string, seller: string): Promise<Boolean> {
   return data == "ok";
 }
 
+async function Delete(seller: string) {
+  const { data } = await Http.delete("/seller/" + seller);
+  return data == "ok";
+}
+
 type Props = {
   children?: React.ReactNode;
 };
@@ -53,6 +58,7 @@ interface ISellerProvider {
   count: number;
   setSearch: (str: string) => void;
   search: string;
+  remove: (name: string) => void;
 }
 
 export const SellerContext = createContext<ISellerProvider>({
@@ -128,6 +134,11 @@ const SellerProvider: React.FC<Props> = ({ children }) => {
     setItems((i) => [seller, ...i]);
   }
 
+  async function remove(name: string) {
+    await Delete(name);
+    setItems((i) => i.filter((a) => a.name != name));
+  }
+
   const values: ISellerProvider = {
     add,
     assign,
@@ -140,6 +151,7 @@ const SellerProvider: React.FC<Props> = ({ children }) => {
     select,
     selected,
     items,
+    remove,
   };
 
   return (

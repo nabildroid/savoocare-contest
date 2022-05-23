@@ -142,6 +142,15 @@ api.post("/seller", async (req, res) => {
   });
 });
 
+api.delete("/seller/:id", async (req, res) => {
+  const { id } = req.params;
+
+  await db<Code>("codes").delete().where("seller", "=", id);
+  await db<Seller>("sellers").delete().where("name", id);
+
+  return res.send("ok");
+});
+
 api.post("/sellers/assign/:seller/:serial", async (req, res) => {
   const { seller, serial } = req.params;
 
@@ -157,7 +166,9 @@ api.delete("/code/:serial", async (req, res) => {
   // todo delete first all the subscriptions
 
   const subscription = (
-    await db<Code>("codes").where("serial", "=", parseInt(serial)).select("subscription")
+    await db<Code>("codes")
+      .where("serial", "=", parseInt(serial))
+      .select("subscription")
   )[0];
 
   if (subscription) {
@@ -349,9 +360,11 @@ api.delete("/contest/:id", async (req, res) => {
 
 api.get("/contest/:id/applications", async (req, res) => {
   const { id } = req.params;
+  const seller = req.query.seller as string;
 
-  const apps = await db<Code>("codes")
+  let apps = db<Code>("codes")
     .join("contests", "contests.id", "codes.contest")
+    .where("contests.id", "=", id)
     .leftJoin("applications", "applications.subscription", "codes.subscription")
     .select({
       title: "contests.title",
@@ -367,13 +380,24 @@ api.get("/contest/:id/applications", async (req, res) => {
       app_created: "applications.created_at",
     });
 
-  console.log(apps);
-  let csv =
-    "contest title,serial code,seller,activated,name,address,age,phone,email,married, applied at\n";
+  if (seller) {
+    apps = apps.where("codes.seller", "=", seller);
+    apps = apps.select({
+      subscription: "codes.subscription",
+    });
+  }
 
-  apps.forEach((app) => {
+  let csv = `contest title, ${
+    seller ? "subscription," : ""
+  } serial code,seller,activated,name,address,age,phone,email,married, applied at\n`;
+
+  (await apps).forEach((app) => {
     csv += app["title"].replace(",", " ") + ",";
-    csv += app["serial"].replace("\r","").replace(",", " ") + ",";
+    if (seller) {
+      csv += app["subscription"].replace(",", " ") + ",";
+    }
+
+    csv += app["serial"].replace("\r", "").replace(",", " ") + ",";
     csv += app["seller"] + ",";
     csv += (app["activated"] ? "activated" : "open") + ",";
     csv += (app["app_name"] ?? "").replace(",", " ") + ",";
