@@ -145,8 +145,22 @@ api.post("/seller", async (req, res) => {
 api.delete("/seller/:id", async (req, res) => {
   const { id } = req.params;
 
-  await db<Code>("codes").delete().where("seller", "=", id);
-  await db<Seller>("sellers").delete().where("name", id);
+  await knex.transaction(async (tdb) => {
+    const subs = await tdb<Code>("codes")
+      .where("seller", "=", id)
+      .select("subscription");
+
+    for (const sub of subs) {
+      await tdb<Application>("applications")
+        .delete()
+        .where("subscription", "=", sub.subscription);
+    }
+
+    await tdb<Code>("codes").delete().where("seller", "=", id);
+    await tdb<Seller>("sellers").delete().where("name", "=", id);
+
+  });
+
 
   return res.send("ok");
 });
