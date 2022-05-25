@@ -67,7 +67,10 @@ api.get("/sellers/?:page", async (req, res) => {
   ref = ref.leftJoin("codes", "codes.seller", "sellers.name");
   ref = ref.groupBy("sellers.name");
   ref = ref.orderBy("sellers.name", "desc");
-  if (name) {
+  
+  if (name == "empty") {
+    ref = ref.having("products", "=", 0);
+  } else if (name) {
     ref = ref.whereLike("sellers.name", `%${name}%`);
   }
 
@@ -158,9 +161,7 @@ api.delete("/seller/:id", async (req, res) => {
 
     await tdb<Code>("codes").delete().where("seller", "=", id);
     await tdb<Seller>("sellers").delete().where("name", "=", id);
-
   });
-
 
   return res.send("ok");
 });

@@ -70,7 +70,8 @@ export const SellerContext = createContext<ISellerProvider>({
 } as any);
 
 const SellerProvider: React.FC<Props> = ({ children }) => {
-  const { pageCount, setSeller, sellectedSeller } = useContext(AppContext);
+  const { pageCount, setSeller, sellectedSeller, searchSeller } =
+    useContext(AppContext);
   const [search, setSearch] = useState("");
   const [selected, select] = useState<Seller>();
   const [items, setItems] = useState<Seller[]>([]);
@@ -79,10 +80,11 @@ const SellerProvider: React.FC<Props> = ({ children }) => {
   const [page, setPage] = useState(0);
 
   const query = useQuery(
-    ["getSellers", page, pageCount],
+    ["getSellers", page, pageCount, searchSeller],
     () => {
       return getSellers(page, {
         max: pageCount,
+        name: searchSeller,
       });
     },
     {

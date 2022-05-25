@@ -30,6 +30,9 @@ export interface IAppProvider {
 
   section: Page;
   setSection: (p: Page) => void;
+
+  searchSeller: string;
+  setSearchSeller: (str: string) => void;
 }
 
 export const AppContext = createContext<IAppProvider>(null!);
@@ -37,6 +40,7 @@ export const AppContext = createContext<IAppProvider>(null!);
 const AppProvider: React.FC<Props> = ({ children }) => {
   const [authorized, setAuth] = useState<boolean>(null!);
   const [sellectedSeller, setSeller] = useState<Seller>();
+  const [searchSeller, setSearchSeller] = useState("");
   const [pageCount, setPageCount] = useState<PageCount>(10);
   const [innerLoading, setInnerLoading] = useState(false);
 
@@ -54,8 +58,12 @@ const AppProvider: React.FC<Props> = ({ children }) => {
   const values: IAppProvider = {
     authorized,
     setAuth,
+
     sellectedSeller,
     setSeller,
+
+    setSearchSeller,
+    searchSeller,
 
     pageCount,
     setPageCount,
