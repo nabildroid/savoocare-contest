@@ -9,8 +9,10 @@ export default function AddSeller({ hide }: { hide: () => void }) {
   const [name, setName] = useState("");
 
   async function save() {
-    add(name);
-    hide();
+    if (name.length) {
+      add(name);
+      hide();
+    }
   }
 
   return (

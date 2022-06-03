@@ -67,7 +67,7 @@ api.get("/sellers/?:page", async (req, res) => {
   ref = ref.leftJoin("codes", "codes.seller", "sellers.name");
   ref = ref.groupBy("sellers.name");
   ref = ref.orderBy("sellers.name", "desc");
-  
+
   if (name == "empty") {
     ref = ref.having("products", "=", 0);
   } else if (name) {
@@ -77,6 +77,8 @@ api.get("/sellers/?:page", async (req, res) => {
   if (type == "unassigned") {
     // ref = ref.whereLike("codes.", `%${name}%`);
   }
+
+  ref = ref.where("sellers.name", "<>", "");
 
   const sellers = await ref
     .count({ products: "codes.seller" })

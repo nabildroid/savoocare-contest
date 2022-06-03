@@ -5,8 +5,9 @@ import { Http } from "../main";
 import { AppContext } from "./appContext";
 
 export async function createSeller(name: string) {
+  
   const { data } = await Http.post("/seller", {
-    name,
+    name:name.trim(),
   });
 
   return data as Seller;
