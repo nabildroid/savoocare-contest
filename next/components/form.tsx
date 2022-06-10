@@ -188,7 +188,7 @@ export default function Form({
                         <input
                           {...register("tel", {
                             required: true,
-                            pattern: /0?\d{9}\d?/,
+                            pattern: /0?\d{9}\d?\d?/,
                           })}
                           type="tel"
                           id="tel"

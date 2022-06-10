@@ -71,7 +71,7 @@ api.post(
   body("email").optional().isEmail(),
   body("tel")
     .isString()
-    .matches(/\+\d+\-0?\d{9}\d?$/),
+    .matches(/\+\d+\-0?\d{9}\d?\d?$/),
   body("address").isLength({ min: 3, max: 200 }),
   body("married").optional().isBoolean(),
 

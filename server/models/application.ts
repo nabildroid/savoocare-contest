@@ -7,7 +7,7 @@ export async function createApplicationTable(knex: Knex.Knex) {
       table.increments("id").primary();
       table.string("name").notNullable();
       table.integer("age").notNullable();
-      table.integer("phone").notNullable();
+      table.string("phone").notNullable();
       table.string("email");
       table.string("address").notNullable();
       table.boolean("married");
